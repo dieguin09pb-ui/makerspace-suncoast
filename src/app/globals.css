@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 220 9% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 9% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 9% 20%;
+    --primary: 207 47% 57%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 100% 97%;
+    --secondary-foreground: 207 47% 57%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 13% 55%;
+    --accent: 214 100% 97%;
+    --accent-foreground: 207 47% 57%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 207 47% 57%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-[#F0F7FF] text-gray-800 antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+/* Calendar grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}

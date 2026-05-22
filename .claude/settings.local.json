@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Alejandro Diaz\\\\Documents\\\\DIEGO\\\\Random Projects\\\\Makerspace\" -Force | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"Directory\"}else{\"File\"}}}, @{Name=\"Size\";Expression={if\\($_.PSIsContainer\\){\"-\"}else{$_.Length}}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Alejandro Diaz\\\\Documents\\\\DIEGO\\\\Random Projects\\\\Makerspace\\\\Images\" -Force | Select-Object Name, @{Name=\"Size \\(bytes\\)\";Expression={$_.Length}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem *)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias \"@/*\" --no-turbopack --eslint)",
+      "Bash(npm install *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
+      "PowerShell(New-Item *)",
+      "Bash(npm run *)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git config *)",
+      "Bash(git add *)"
+    ]
+  }
+}
