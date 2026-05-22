@@ -222,6 +222,85 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* Resources */}
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        <h2 className="text-2xl font-bold text-[#5BA4CF] mb-6">Resources &amp; Links</h2>
+        <div className="grid sm:grid-cols-2 gap-6">
+          {/* Competitions */}
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Image src="/images/trophy.png" alt="" width={32} height={32} className="object-contain" aria-hidden="true" />
+              <h3 className="font-semibold text-gray-800">Competitions</h3>
+            </div>
+            <div className="space-y-2">
+              <a href="https://devpost.com" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-lg border border-gray-100 px-3 py-2 hover:bg-[#F0F7FF] hover:border-[#5BA4CF] transition-colors group">
+                <span className="text-sm font-medium text-gray-700 group-hover:text-[#5BA4CF]">Devpost</span>
+                <span className="text-xs text-gray-400 ml-auto">devpost.com</span>
+              </a>
+              <a href="https://www.herox.com" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-lg border border-gray-100 px-3 py-2 hover:bg-[#F0F7FF] hover:border-[#5BA4CF] transition-colors group">
+                <span className="text-sm font-medium text-gray-700 group-hover:text-[#5BA4CF]">HeroX</span>
+                <span className="text-xs text-gray-400 ml-auto">herox.com</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Tools */}
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Image src="/images/Gear1.png" alt="" width={32} height={32} className="object-contain" aria-hidden="true" />
+              <h3 className="font-semibold text-gray-800">Helpful Tools</h3>
+            </div>
+            <div className="space-y-2">
+              <a href="https://www.tinkercad.com" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-lg border border-gray-100 px-3 py-2 hover:bg-[#F0F7FF] hover:border-[#5BA4CF] transition-colors group">
+                <span className="text-sm font-medium text-gray-700 group-hover:text-[#5BA4CF]">Tinkercad</span>
+                <span className="text-xs text-gray-400 ml-auto">3D design &amp; circuits</span>
+              </a>
+              <a href="https://claude.ai" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-lg border border-gray-100 px-3 py-2 hover:bg-[#F0F7FF] hover:border-[#5BA4CF] transition-colors group">
+                <span className="text-sm font-medium text-gray-700 group-hover:text-[#5BA4CF]">Claude AI</span>
+                <span className="text-xs text-gray-400 ml-auto">AI assistant</span>
+              </a>
+              <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-lg border border-gray-100 px-3 py-2 hover:bg-[#F0F7FF] hover:border-[#5BA4CF] transition-colors group">
+                <span className="text-sm font-medium text-gray-700 group-hover:text-[#5BA4CF]">ChatGPT</span>
+                <span className="text-xs text-gray-400 ml-auto">AI assistant</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Map */}
+      <section className="bg-white py-12 px-4">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-2xl font-bold text-[#5BA4CF] mb-2">Find Us</h2>
+          <p className="text-gray-500 mb-4 text-sm">
+            Suncoast Community High School — 1717 Avenue S, Riviera Beach, FL 33404
+          </p>
+          <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+            <iframe
+              title="Suncoast Community High School map"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=-80.0720%2C26.7760%2C-80.0580%2C26.7820&layer=mapnik&marker=26.7790%2C-80.0650"
+              width="100%"
+              height="340"
+              style={{ border: 0 }}
+              loading="lazy"
+            />
+          </div>
+          <a
+            href="https://www.openstreetmap.org/?mlat=26.7790&mlon=-80.0650#map=16/26.779/-80.065"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-[#5BA4CF] hover:underline mt-1 inline-block"
+          >
+            View larger map
+          </a>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="bg-gradient-to-r from-[#5BA4CF] to-[#93C5FD] py-14 px-4 text-center text-white mt-4">
         <div className="mx-auto max-w-2xl">

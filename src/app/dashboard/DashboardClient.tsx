@@ -7,6 +7,7 @@ import { SchedulingConflict, Quarter, DayOfWeek, AnalyticsData } from "@/lib/typ
 import { QUARTER_IDS, DAYS_OF_WEEK } from "@/lib/calendar-data";
 import { DayOfWeekChart } from "@/components/dashboard/DayOfWeekChart";
 import { QuarterChart } from "@/components/dashboard/QuarterChart";
+import { RecurringChart } from "@/components/dashboard/RecurringChart";
 import { ConflictTable } from "@/components/dashboard/ConflictTable";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -187,51 +188,67 @@ export function DashboardClient({ initialConflicts }: Props) {
         />
       </div>
 
-      {/* Charts */}
-      <div className="grid md:grid-cols-2 gap-6 mt-8">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-4">
+      {/* Charts — 3 columns */}
+      <div className="grid md:grid-cols-3 gap-5 mt-8">
+        <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center gap-2 mb-1">
             <Image
               src="/images/StatGraphs.png"
               alt=""
-              width={28}
-              height={28}
+              width={24}
+              height={24}
               className="object-contain"
               aria-hidden="true"
             />
             <h2 className="font-semibold text-gray-700">Conflicts by Day of Week</h2>
           </div>
+          <p className="text-xs text-gray-400 mb-3">Each bar is color-coded by day</p>
           {analytics.total === 0 ? (
-            <div className="h-60 flex items-center justify-center text-gray-400 text-sm">
-              No data yet
+            <div className="h-64 flex items-center justify-center text-gray-400 text-sm">
+              No data yet — submit a conflict to see charts
             </div>
           ) : (
             <DayOfWeekChart data={analytics.byDay} />
           )}
         </div>
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-1">
             <Image
               src="/images/AnalyzeGraph.png"
               alt=""
-              width={28}
-              height={28}
+              width={24}
+              height={24}
               className="object-contain"
               aria-hidden="true"
             />
-            <h2 className="font-semibold text-gray-700">Conflicts by Quarter</h2>
+            <h2 className="font-semibold text-gray-700">Recurring vs One-time</h2>
           </div>
-          {analytics.total === 0 ? (
-            <div className="h-60 flex items-center justify-center text-gray-400 text-sm">
-              No data yet
-            </div>
-          ) : (
-            <QuarterChart
-              data={analytics.byQuarter}
-              selectedQuarters={selectedQuarters}
-            />
-          )}
+          <p className="text-xs text-gray-400 mb-1">Conflict type breakdown</p>
+          <RecurringChart
+            recurring={analytics.recurringCount}
+            total={analytics.total}
+          />
         </div>
+      </div>
+
+      {/* Quarter pie chart — full width */}
+      <div className="mt-5 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="flex items-center gap-2 mb-1">
+          <Image
+            src="/images/Analytics.png"
+            alt=""
+            width={24}
+            height={24}
+            className="object-contain"
+            aria-hidden="true"
+          />
+          <h2 className="font-semibold text-gray-700">Conflicts by Quarter</h2>
+        </div>
+        <p className="text-xs text-gray-400 mb-3">Which quarters have the most scheduling conflicts</p>
+        <QuarterChart
+          data={analytics.byQuarter}
+          selectedQuarters={selectedQuarters}
+        />
       </div>
 
       {/* Table */}
