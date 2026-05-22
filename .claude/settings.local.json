@@ -12,7 +12,29 @@
       "Bash(gh --version)",
       "Bash(gh auth *)",
       "Bash(git config *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(gh repo *)",
+      "Bash(vercel --version)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(vercel whoami *)",
+      "Bash(vercel --prod --yes)",
+      "Bash(vercel link *)",
+      "Bash(vercel inspect *)",
+      "Bash(vercel blob *)",
+      "Bash(vercel env *)",
+      "Bash(curl -s https://api.vercel.com/v2/teams?limit=5 -H 'Authorization: Bearer vca_2pkaTEpatdpwSVs6j57ZqZDAjsPvFn2usW0nBq9Qa4faRV7chd3gNANy')",
+      "Bash(python3 -c ' *)",
+      "Bash(vercel link-blob-store *)",
+      "Bash(vercel storage *)",
+      "Bash(grep -A5 \"/connections\\\\`\" \"C:/Users/Alejandro Diaz/AppData/Roaming/npm/node_modules/vercel/dist/commands-bulk.js\")",
+      "Bash(vercel logs *)",
+      "Bash(git push *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Alejandro Diaz\\\\Documents\\\\DIEGO\\\\Random Projects\\\\Makerspace\\\\Images\\\\\" | Where-Object { $_.Name -imatch \"abhi|Abhi\" } | Select-Object Name)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Alejandro Diaz\\\\Documents\\\\DIEGO\\\\Random Projects\\\\Makerspace\\\\\" -Recurse | Where-Object { $_.Name -imatch \"abhi\" } | Select-Object FullName)",
+      "PowerShell(Test-Path \"C:\\\\Users\\\\Alejandro Diaz\\\\Documents\\\\DIEGO\\\\Random Projects\\\\Makerspace\\\\Images\"; \\(Get-ChildItem \"C:\\\\Users\\\\Alejandro Diaz\\\\Documents\\\\DIEGO\\\\Random Projects\\\\Makerspace\\\\Images\"\\).Count)",
+      "PowerShell(\\(Get-ChildItem \"C:\\\\Users\\\\Alejandro Diaz\\\\Documents\\\\DIEGO\\\\Random Projects\\\\Makerspace\\\\Images\"\\) | Sort-Object LastWriteTime -Descending | Select-Object -First 10 | ForEach-Object { \"$\\($_.LastWriteTime\\) $\\($_.Name\\)\" })",
+      "PowerShell(Copy-Item *)"
     ]
   }
 }
