@@ -18,13 +18,13 @@ export default function HomePage() {
     });
 
   const clipartIcons = [
-    { src: "/images/Gear#1.png", alt: "" },
+    { src: "/images/Gear1.png", alt: "" },
     { src: "/images/Lightbulb.png", alt: "" },
-    { src: "/images/Wrench#1.png", alt: "" },
-    { src: "/images/Drill#2.png", alt: "" },
+    { src: "/images/Wrench1.png", alt: "" },
+    { src: "/images/Drill2.png", alt: "" },
     { src: "/images/laptop.png", alt: "" },
-    { src: "/images/Hammer#1.png", alt: "" },
-    { src: "/images/Magnifying Glass Clipart.png", alt: "" },
+    { src: "/images/Hammer1.png", alt: "" },
+    { src: "/images/MagnifyingGlass.png", alt: "" },
     { src: "/images/Ruler.png", alt: "" },
   ];
 
@@ -106,9 +106,9 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-2 gap-4">
           {[
-            { src: "/images/Gear#1.png", label: "Engineering" },
+            { src: "/images/Gear1.png", label: "Engineering" },
             { src: "/images/laptop.png", label: "Programming" },
-            { src: "/images/Drill#2.png", label: "Fabrication" },
+            { src: "/images/Drill2.png", label: "Fabrication" },
             { src: "/images/Lightbulb.png", label: "Innovation" },
           ].map((item) => (
             <div
