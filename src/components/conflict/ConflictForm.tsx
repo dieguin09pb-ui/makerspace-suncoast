@@ -42,11 +42,11 @@ const RECURRENCE_OPTIONS: { value: RecurrenceFrequency; label: string }[] = [
 ];
 
 const TIME_SLOTS: { value: TimeSlot; label: string; desc: string }[] = [
-  { value: "Lunch", label: "Lunch", desc: "~11:30 AM – 12:30 PM" },
+  { value: "Lunch", label: "Lunch", desc: "12:10 PM – 12:50 PM" },
   {
     value: "After School",
     label: "After School",
-    desc: "~3:30 PM onwards",
+    desc: "2:40 PM onwards",
   },
 ];
 

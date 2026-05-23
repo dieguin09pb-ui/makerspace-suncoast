@@ -17,8 +17,8 @@ const DAYS: DayOfWeek[] = [
 const SLOTS: TimeSlot[] = ["Lunch", "After School"];
 
 const SLOT_LABELS: Record<TimeSlot, string> = {
-  Lunch: "Lunch (~11:30 AM)",
-  "After School": "After School (~3:30 PM)",
+  Lunch: "Lunch (12:10–12:50 PM)",
+  "After School": "After School (2:40 PM+)",
 };
 
 function heatStyle(
