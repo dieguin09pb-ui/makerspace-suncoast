@@ -26,7 +26,7 @@ export async function GET() {
   const byQuarter = QUARTER_IDS.map((q) => ({
     quarter: q,
     count: conflicts.filter((c) => {
-      if (c.isRecurring) return c.scheduleScope === q;
+      if (c.isRecurring) return (c.scheduleScope ?? []).includes(q);
       return c.specificDate ? getQuarterForDate(c.specificDate) === q : false;
     }).length,
   }));

@@ -27,11 +27,11 @@ const DAYS: DayOfWeek[] = [
 ];
 
 const SCHEDULE_SCOPE_OPTIONS: { value: ScheduleScope; label: string }[] = [
-  { value: "Q1", label: "Q1 — Aug 17 to Oct 16, 2026" },
-  { value: "Q2", label: "Q2 — Oct 19, 2026 to Jan 8, 2027" },
-  { value: "Q3", label: "Q3 — Jan 11 to Mar 12, 2027" },
-  { value: "Q4", label: "Q4 — Mar 15 to May 28, 2027" },
-  { value: "Custom", label: "Custom date range..." },
+  { value: "Q1", label: "Q1 (Aug–Oct)" },
+  { value: "Q2", label: "Q2 (Oct–Jan)" },
+  { value: "Q3", label: "Q3 (Jan–Mar)" },
+  { value: "Q4", label: "Q4 (Mar–May)" },
+  { value: "Custom", label: "Custom dates" },
 ];
 
 const RECURRENCE_OPTIONS: { value: RecurrenceFrequency; label: string }[] = [
@@ -96,7 +96,7 @@ export function ConflictForm() {
       daysOfWeek: [],
       recurrenceFrequency: undefined,
       recurrenceStartDate: "",
-      scheduleScope: undefined,
+      scheduleScope: [],
       customStartDate: "",
       customEndDate: "",
       specificDate: "",
@@ -105,17 +105,29 @@ export function ConflictForm() {
 
   const selectedDays = watch("daysOfWeek") ?? [];
   const isRecurring = watch("isRecurring");
-  const scheduleScope = watch("scheduleScope");
+  const scheduleScope = watch("scheduleScope") ?? [];
 
   function toggleDay(day: DayOfWeek) {
     if (selectedDays.includes(day)) {
+      setValue("daysOfWeek", selectedDays.filter((d) => d !== day), {
+        shouldValidate: true,
+      });
+    } else {
+      setValue("daysOfWeek", [...selectedDays, day], { shouldValidate: true });
+    }
+  }
+
+  function toggleScope(scope: ScheduleScope) {
+    if (scheduleScope.includes(scope)) {
       setValue(
-        "daysOfWeek",
-        selectedDays.filter((d) => d !== day),
+        "scheduleScope",
+        scheduleScope.filter((s) => s !== scope),
         { shouldValidate: true }
       );
     } else {
-      setValue("daysOfWeek", [...selectedDays, day], { shouldValidate: true });
+      setValue("scheduleScope", [...scheduleScope, scope], {
+        shouldValidate: true,
+      });
     }
   }
 
@@ -230,7 +242,7 @@ export function ConflictForm() {
                   field.onChange(false);
                   setValue("daysOfWeek", []);
                   setValue("recurrenceFrequency", undefined);
-                  setValue("scheduleScope", undefined);
+                  setValue("scheduleScope", []);
                 }}
               >
                 No — one-time only
@@ -307,30 +319,23 @@ export function ConflictForm() {
 
           {/* Schedule scope */}
           <div className="space-y-1.5">
-            <Label htmlFor="scheduleScope">
-              How long does this last?
+            <Label>
+              How long does this last?{" "}
+              <span className="text-gray-400 font-normal text-xs">
+                (select all that apply)
+              </span>
             </Label>
-            <Controller
-              name="scheduleScope"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  value={field.value ?? ""}
-                  onChange={(e) =>
-                    field.onChange(e.target.value || undefined)
-                  }
-                  className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-[#5BA4CF]"
+            <div className="flex flex-wrap gap-2 mt-1">
+              {SCHEDULE_SCOPE_OPTIONS.map((opt) => (
+                <ToggleButton
+                  key={opt.value}
+                  active={scheduleScope.includes(opt.value)}
+                  onClick={() => toggleScope(opt.value)}
                 >
-                  <option value="">Select period...</option>
-                  {SCHEDULE_SCOPE_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              )}
-            />
+                  {opt.label}
+                </ToggleButton>
+              ))}
+            </div>
             {errors.scheduleScope && (
               <p className="text-sm text-red-500">
                 {errors.scheduleScope.message}
@@ -339,7 +344,7 @@ export function ConflictForm() {
           </div>
 
           {/* Custom date range */}
-          {scheduleScope === "Custom" && (
+          {scheduleScope.includes("Custom") && (
             <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-[#5BA4CF]/40">
               <div className="space-y-1.5">
                 <Label htmlFor="customStartDate">From</Label>

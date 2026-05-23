@@ -33,7 +33,9 @@ export const conflictSchema = z
       .enum(["Weekly", "Every other week", "Monthly", "Other"])
       .optional(),
     recurrenceStartDate: z.string().optional(),
-    scheduleScope: z.enum(["Q1", "Q2", "Q3", "Q4", "Custom"]).optional(),
+    scheduleScope: z
+      .array(z.enum(["Q1", "Q2", "Q3", "Q4", "Custom"]))
+      .optional(),
     customStartDate: z.string().optional(),
     customEndDate: z.string().optional(),
 
@@ -56,14 +58,14 @@ export const conflictSchema = z
           path: ["recurrenceFrequency"],
         });
       }
-      if (!data.scheduleScope) {
+      if (!data.scheduleScope || data.scheduleScope.length === 0) {
         ctx.addIssue({
           code: "custom",
-          message: "Select the time period",
+          message: "Select at least one time period",
           path: ["scheduleScope"],
         });
       }
-      if (data.scheduleScope === "Custom") {
+      if (data.scheduleScope?.includes("Custom")) {
         if (!data.customStartDate) {
           ctx.addIssue({
             code: "custom",
