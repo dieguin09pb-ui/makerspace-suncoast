@@ -20,21 +20,13 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Image
-              src="/images/RealLogoForSU.png"
-              alt="Suncoast Community High School"
-              width={36}
-              height={36}
-              className="object-contain"
-            />
-            <span className="text-xs text-gray-500">Palm Beach County School District</span>
-          </div>
+          <p className="text-xs text-gray-500">Palm Beach County School District</p>
 
           <nav className="flex gap-4 text-sm text-gray-500">
             <Link href="/" className="hover:text-[#5BA4CF] transition-colors">Home</Link>
             <Link href="/calendar" className="hover:text-[#5BA4CF] transition-colors">Calendar</Link>
             <Link href="/conflict" className="hover:text-[#5BA4CF] transition-colors">Report Conflict</Link>
+            <Link href="/activities" className="hover:text-[#5BA4CF] transition-colors">Activities</Link>
             <Link href="/dashboard" className="hover:text-[#5BA4CF] transition-colors">Dashboard</Link>
           </nav>
         </div>

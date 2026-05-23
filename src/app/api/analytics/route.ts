@@ -1,29 +1,53 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getConflicts } from "@/lib/blob";
-import { AnalyticsData, DayOfWeek, Quarter } from "@/lib/types";
-import { DAYS_OF_WEEK, QUARTER_IDS } from "@/lib/calendar-data";
+import { AnalyticsData, DayOfWeek, Quarter, TimeSlot } from "@/lib/types";
+import { DAYS_OF_WEEK, QUARTER_IDS, QUARTERS } from "@/lib/calendar-data";
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const quarterParam = searchParams.getAll("quarter") as Quarter[];
-
-  let conflicts = await getConflicts();
-
-  if (quarterParam.length > 0) {
-    conflicts = conflicts.filter((c) =>
-      c.quartersAffected.some((q) => quarterParam.includes(q))
-    );
+function getQuarterForDate(dateStr: string): Quarter | null {
+  const date = new Date(dateStr + "T12:00:00");
+  for (const q of QUARTERS) {
+    if (date >= q.start && date <= q.end) return q.id;
   }
+  return null;
+}
+
+const TIME_SLOTS: TimeSlot[] = ["Lunch", "After School"];
+
+export async function GET() {
+  const conflicts = await getConflicts();
 
   const byDay = DAYS_OF_WEEK.map((day) => ({
     day: day as DayOfWeek,
-    count: conflicts.filter((c) => c.daysOfWeek.includes(day as DayOfWeek)).length,
+    count: conflicts.filter(
+      (c) => c.isRecurring && (c.daysOfWeek ?? []).includes(day as DayOfWeek)
+    ).length,
   }));
 
   const byQuarter = QUARTER_IDS.map((q) => ({
     quarter: q,
-    count: conflicts.filter((c) => c.quartersAffected.includes(q)).length,
+    count: conflicts.filter((c) => {
+      if (c.isRecurring) return c.scheduleScope === q;
+      return c.specificDate ? getQuarterForDate(c.specificDate) === q : false;
+    }).length,
   }));
+
+  const bySlot = TIME_SLOTS.map((slot) => ({
+    slot,
+    count: conflicts.filter((c) => c.timeSlot === slot).length,
+  }));
+
+  const scheduleGrid = DAYS_OF_WEEK.flatMap((day) =>
+    TIME_SLOTS.map((slot) => ({
+      day: day as DayOfWeek,
+      slot: slot as TimeSlot,
+      count: conflicts.filter(
+        (c) =>
+          c.isRecurring &&
+          (c.daysOfWeek ?? []).includes(day as DayOfWeek) &&
+          c.timeSlot === slot
+      ).length,
+    }))
+  );
 
   const maxDay = byDay.reduce(
     (max, cur) => (cur.count > max.count ? cur : max),
@@ -39,6 +63,8 @@ export async function GET(req: NextRequest) {
     recurringCount: conflicts.filter((c) => c.isRecurring).length,
     byDay,
     byQuarter,
+    bySlot,
+    scheduleGrid,
     mostConflictedDay: maxDay?.count > 0 ? maxDay.day : null,
     mostConflictedQuarter: maxQuarter?.count > 0 ? maxQuarter.quarter : null,
   };

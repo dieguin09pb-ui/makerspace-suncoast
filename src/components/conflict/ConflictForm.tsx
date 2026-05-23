@@ -8,17 +8,47 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { conflictSchema, ConflictFormData, DayOfWeek, Quarter } from "@/lib/types";
+import {
+  conflictSchema,
+  ConflictFormData,
+  DayOfWeek,
+  ScheduleScope,
+  TimeSlot,
+  RecurrenceFrequency,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const DAYS: DayOfWeek[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const QUARTERS: Quarter[] = ["Q1", "Q2", "Q3", "Q4"];
-const QUARTER_LABELS: Record<Quarter, string> = {
-  Q1: "Q1 (Aug–Oct 2026)",
-  Q2: "Q2 (Oct 2026–Jan 2027)",
-  Q3: "Q3 (Jan–Mar 2027)",
-  Q4: "Q4 (Mar–May 2027)",
-};
+const DAYS: DayOfWeek[] = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+];
+
+const SCHEDULE_SCOPE_OPTIONS: { value: ScheduleScope; label: string }[] = [
+  { value: "Q1", label: "Q1 — Aug 17 to Oct 16, 2026" },
+  { value: "Q2", label: "Q2 — Oct 19, 2026 to Jan 8, 2027" },
+  { value: "Q3", label: "Q3 — Jan 11 to Mar 12, 2027" },
+  { value: "Q4", label: "Q4 — Mar 15 to May 28, 2027" },
+  { value: "Custom", label: "Custom date range..." },
+];
+
+const RECURRENCE_OPTIONS: { value: RecurrenceFrequency; label: string }[] = [
+  { value: "Weekly", label: "Every week" },
+  { value: "Every other week", label: "Every other week" },
+  { value: "Monthly", label: "Once a month" },
+  { value: "Other", label: "Other / Irregular" },
+];
+
+const TIME_SLOTS: { value: TimeSlot; label: string; desc: string }[] = [
+  { value: "Lunch", label: "Lunch", desc: "~11:30 AM – 12:30 PM" },
+  {
+    value: "After School",
+    label: "After School",
+    desc: "~3:30 PM onwards",
+  },
+];
 
 function ToggleButton({
   active,
@@ -60,38 +90,32 @@ export function ConflictForm() {
     resolver: zodResolver(conflictSchema),
     defaultValues: {
       name: "",
-      daysOfWeek: [],
-      timeStart: "",
-      timeEnd: "",
       reason: "",
+      timeSlot: undefined,
       isRecurring: false,
-      quartersAffected: [],
+      daysOfWeek: [],
+      recurrenceFrequency: undefined,
+      recurrenceStartDate: "",
+      scheduleScope: undefined,
+      customStartDate: "",
+      customEndDate: "",
+      specificDate: "",
     },
   });
 
-  const selectedDays = watch("daysOfWeek");
-  const selectedQuarters = watch("quartersAffected");
+  const selectedDays = watch("daysOfWeek") ?? [];
   const isRecurring = watch("isRecurring");
+  const scheduleScope = watch("scheduleScope");
 
   function toggleDay(day: DayOfWeek) {
-    const current = selectedDays ?? [];
-    if (current.includes(day)) {
-      setValue("daysOfWeek", current.filter((d) => d !== day), {
-        shouldValidate: true,
-      });
+    if (selectedDays.includes(day)) {
+      setValue(
+        "daysOfWeek",
+        selectedDays.filter((d) => d !== day),
+        { shouldValidate: true }
+      );
     } else {
-      setValue("daysOfWeek", [...current, day], { shouldValidate: true });
-    }
-  }
-
-  function toggleQuarter(q: Quarter) {
-    const current = selectedQuarters ?? [];
-    if (current.includes(q)) {
-      setValue("quartersAffected", current.filter((x) => x !== q), {
-        shouldValidate: true,
-      });
-    } else {
-      setValue("quartersAffected", [...current, q], { shouldValidate: true });
+      setValue("daysOfWeek", [...selectedDays, day], { shouldValidate: true });
     }
   }
 
@@ -103,11 +127,7 @@ export function ConflictForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!res.ok) {
-        throw new Error("Submission failed");
-      }
-
+      if (!res.ok) throw new Error();
       toast({
         variant: "success",
         title: "Conflict submitted",
@@ -130,64 +150,22 @@ export function ConflictForm() {
       {/* Name */}
       <div className="space-y-1.5">
         <Label htmlFor="name">Full Name</Label>
-        <Input
-          id="name"
-          placeholder="Your full name"
-          {...register("name")}
-        />
+        <Input id="name" placeholder="Your full name" {...register("name")} />
         {errors.name && (
           <p className="text-sm text-red-500">{errors.name.message}</p>
         )}
       </div>
 
-      {/* Days of week */}
-      <div className="space-y-1.5">
-        <Label>Days of the Week</Label>
-        <p className="text-xs text-gray-500">Which days do you have a conflict?</p>
-        <div className="flex flex-wrap gap-2 mt-1">
-          {DAYS.map((day) => (
-            <ToggleButton
-              key={day}
-              active={selectedDays?.includes(day) ?? false}
-              onClick={() => toggleDay(day)}
-            >
-              {day.slice(0, 3)}
-            </ToggleButton>
-          ))}
-        </div>
-        {errors.daysOfWeek && (
-          <p className="text-sm text-red-500">{errors.daysOfWeek.message}</p>
-        )}
-      </div>
-
-      {/* Time range */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="timeStart">Start Time</Label>
-          <Input id="timeStart" type="time" {...register("timeStart")} />
-          {errors.timeStart && (
-            <p className="text-sm text-red-500">{errors.timeStart.message}</p>
-          )}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="timeEnd">End Time</Label>
-          <Input id="timeEnd" type="time" {...register("timeEnd")} />
-          {errors.timeEnd && (
-            <p className="text-sm text-red-500">{errors.timeEnd.message}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Reason */}
+      {/* Activity */}
       <div className="space-y-1.5">
         <Label htmlFor="reason">Activity / Reason</Label>
         <p className="text-xs text-gray-500">
-          Describe your conflict (e.g., &quot;Basketball practice&quot;, &quot;Orchestra rehearsal&quot;)
+          e.g. Basketball practice, Orchestra rehearsal, Tutoring
         </p>
         <Textarea
           id="reason"
-          rows={3}
-          placeholder="Basketball practice, tennis matches, music rehearsal..."
+          rows={2}
+          placeholder="Describe your conflict..."
           {...register("reason")}
         />
         {errors.reason && (
@@ -195,63 +173,228 @@ export function ConflictForm() {
         )}
       </div>
 
-      {/* Recurring */}
+      {/* Time slot */}
       <div className="space-y-1.5">
-        <Label>Is this a recurring conflict?</Label>
-        <div className="flex gap-3 mt-1">
-          <Controller
-            name="isRecurring"
-            control={control}
-            render={({ field }) => (
-              <>
-                <ToggleButton
-                  active={field.value === true}
-                  onClick={() => field.onChange(true)}
+        <Label>When during the day?</Label>
+        <Controller
+          name="timeSlot"
+          control={control}
+          render={({ field }) => (
+            <div className="grid grid-cols-2 gap-3 mt-1">
+              {TIME_SLOTS.map((slot) => (
+                <button
+                  key={slot.value}
+                  type="button"
+                  onClick={() => field.onChange(slot.value)}
+                  className={cn(
+                    "rounded-lg border p-3 text-left transition-colors",
+                    field.value === slot.value
+                      ? "border-[#5BA4CF] bg-[#F0F7FF]"
+                      : "border-gray-200 bg-white hover:border-[#5BA4CF]/50"
+                  )}
                 >
-                  Yes — recurring
-                </ToggleButton>
-                <ToggleButton
-                  active={field.value === false}
-                  onClick={() => field.onChange(false)}
-                >
-                  No — one-time
-                </ToggleButton>
-              </>
-            )}
-          />
-        </div>
-        {isRecurring && (
-          <p className="text-xs text-[#5BA4CF] mt-1">
-            Select the quarters below for which this conflict repeats.
-          </p>
+                  <p className="font-medium text-sm text-gray-800">
+                    {slot.label}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">{slot.desc}</p>
+                </button>
+              ))}
+            </div>
+          )}
+        />
+        {errors.timeSlot && (
+          <p className="text-sm text-red-500">{errors.timeSlot.message}</p>
         )}
       </div>
 
-      {/* Quarters affected */}
+      {/* Recurring toggle */}
       <div className="space-y-1.5">
-        <Label>Quarters Affected</Label>
-        <p className="text-xs text-gray-500">
-          Which quarters does this conflict apply to?
-        </p>
-        <div className="flex flex-wrap gap-2 mt-1">
-          {QUARTERS.map((q) => (
-            <ToggleButton
-              key={q}
-              active={selectedQuarters?.includes(q) ?? false}
-              onClick={() => toggleQuarter(q)}
-            >
-              {QUARTER_LABELS[q]}
-            </ToggleButton>
-          ))}
-        </div>
-        {errors.quartersAffected && (
-          <p className="text-sm text-red-500">{errors.quartersAffected.message}</p>
-        )}
+        <Label>Does this happen more than once?</Label>
+        <Controller
+          name="isRecurring"
+          control={control}
+          render={({ field }) => (
+            <div className="flex gap-3 mt-1">
+              <ToggleButton
+                active={field.value === true}
+                onClick={() => {
+                  field.onChange(true);
+                  setValue("specificDate", "");
+                }}
+              >
+                Yes — recurring
+              </ToggleButton>
+              <ToggleButton
+                active={field.value === false}
+                onClick={() => {
+                  field.onChange(false);
+                  setValue("daysOfWeek", []);
+                  setValue("recurrenceFrequency", undefined);
+                  setValue("scheduleScope", undefined);
+                }}
+              >
+                No — one-time only
+              </ToggleButton>
+            </div>
+          )}
+        />
       </div>
+
+      {/* ── RECURRING BRANCH ── */}
+      {isRecurring && (
+        <>
+          {/* Days of week */}
+          <div className="space-y-1.5">
+            <Label>Which days of the week?</Label>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {DAYS.map((day) => (
+                <ToggleButton
+                  key={day}
+                  active={selectedDays.includes(day)}
+                  onClick={() => toggleDay(day)}
+                >
+                  {day.slice(0, 3)}
+                </ToggleButton>
+              ))}
+            </div>
+            {errors.daysOfWeek && (
+              <p className="text-sm text-red-500">{errors.daysOfWeek.message}</p>
+            )}
+          </div>
+
+          {/* Frequency */}
+          <div className="space-y-1.5">
+            <Label htmlFor="recurrenceFrequency">How often does it repeat?</Label>
+            <Controller
+              name="recurrenceFrequency"
+              control={control}
+              render={({ field }) => (
+                <select
+                  {...field}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(e.target.value || undefined)
+                  }
+                  className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-[#5BA4CF]"
+                >
+                  <option value="">Select frequency...</option>
+                  {RECURRENCE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
+            {errors.recurrenceFrequency && (
+              <p className="text-sm text-red-500">
+                {errors.recurrenceFrequency.message}
+              </p>
+            )}
+          </div>
+
+          {/* Start date */}
+          <div className="space-y-1.5">
+            <Label htmlFor="recurrenceStartDate">
+              When does it start? <span className="text-gray-400 font-normal">(optional)</span>
+            </Label>
+            <Input
+              id="recurrenceStartDate"
+              type="date"
+              {...register("recurrenceStartDate")}
+            />
+          </div>
+
+          {/* Schedule scope */}
+          <div className="space-y-1.5">
+            <Label htmlFor="scheduleScope">
+              How long does this last?
+            </Label>
+            <Controller
+              name="scheduleScope"
+              control={control}
+              render={({ field }) => (
+                <select
+                  {...field}
+                  value={field.value ?? ""}
+                  onChange={(e) =>
+                    field.onChange(e.target.value || undefined)
+                  }
+                  className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-[#5BA4CF]"
+                >
+                  <option value="">Select period...</option>
+                  {SCHEDULE_SCOPE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
+            {errors.scheduleScope && (
+              <p className="text-sm text-red-500">
+                {errors.scheduleScope.message}
+              </p>
+            )}
+          </div>
+
+          {/* Custom date range */}
+          {scheduleScope === "Custom" && (
+            <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-[#5BA4CF]/40">
+              <div className="space-y-1.5">
+                <Label htmlFor="customStartDate">From</Label>
+                <Input
+                  id="customStartDate"
+                  type="date"
+                  {...register("customStartDate")}
+                />
+                {errors.customStartDate && (
+                  <p className="text-sm text-red-500">
+                    {errors.customStartDate.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="customEndDate">To</Label>
+                <Input
+                  id="customEndDate"
+                  type="date"
+                  {...register("customEndDate")}
+                />
+                {errors.customEndDate && (
+                  <p className="text-sm text-red-500">
+                    {errors.customEndDate.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ── ONE-TIME BRANCH ── */}
+      {!isRecurring && (
+        <div className="space-y-1.5">
+          <Label htmlFor="specificDate">Date of the conflict</Label>
+          <Input
+            id="specificDate"
+            type="date"
+            {...register("specificDate")}
+          />
+          {errors.specificDate && (
+            <p className="text-sm text-red-500">{errors.specificDate.message}</p>
+          )}
+        </div>
+      )}
 
       {/* Submit */}
       <div className="pt-2">
-        <Button type="submit" size="lg" disabled={submitting} className="w-full sm:w-auto">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={submitting}
+          className="w-full sm:w-auto"
+        >
           {submitting ? "Submitting..." : "Submit Conflict"}
         </Button>
       </div>

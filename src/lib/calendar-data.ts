@@ -118,3 +118,11 @@ export const DAYS_OF_WEEK = [
 ] as const;
 
 export const QUARTER_IDS: Quarter[] = ["Q1", "Q2", "Q3", "Q4"];
+
+export function getQuarterForDate(dateStr: string): Quarter | null {
+  const date = new Date(dateStr + "T12:00:00");
+  for (const q of QUARTERS) {
+    if (date >= q.start && date <= q.end) return q.id;
+  }
+  return null;
+}
