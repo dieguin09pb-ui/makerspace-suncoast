@@ -36,7 +36,7 @@ export default function ConflictPage() {
         </p>
         <p className="text-sm text-gray-500 mt-2">
           Example: A basketball player could submit Tuesdays and Thursdays,
-          3:30–6:00 PM, recurring throughout Q2 and Q3.
+          After School (2:40 PM onwards), recurring throughout Q2 and Q3.
         </p>
       </div>
 

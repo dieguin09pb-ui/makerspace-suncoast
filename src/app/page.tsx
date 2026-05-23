@@ -121,7 +121,7 @@ export default function HomePage() {
                 <div>
                   <p className="font-semibold text-gray-800">Meeting Time</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Every Tuesday<br />After School (~3:30 PM)
+                    Every Tuesday<br />After School (2:40 PM onwards)
                   </p>
                 </div>
               </CardContent>
