@@ -17,17 +17,6 @@ export default function HomePage() {
       year: "numeric",
     });
 
-  const clipartIcons = [
-    { src: "/images/Gear1.png", alt: "" },
-    { src: "/images/Lightbulb.png", alt: "" },
-    { src: "/images/Wrench1.png", alt: "" },
-    { src: "/images/Drill2.png", alt: "" },
-    { src: "/images/laptop.png", alt: "" },
-    { src: "/images/Hammer1.png", alt: "" },
-    { src: "/images/MagnifyingGlass.png", alt: "" },
-    { src: "/images/Ruler.png", alt: "" },
-  ];
-
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -64,23 +53,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Decorative clipart strip */}
-      <div className="bg-white border-y border-gray-100 py-4 overflow-hidden">
-        <div className="flex items-center justify-center gap-6 flex-wrap px-4">
-          {clipartIcons.map((icon, i) => (
-            <Image
-              key={i}
-              src={icon.src}
-              alt={icon.alt}
-              width={48}
-              height={48}
-              className="object-contain opacity-60"
-              aria-hidden="true"
-            />
-          ))}
-        </div>
-      </div>
 
       {/* About + Quick Info */}
       <section className="mx-auto max-w-6xl px-4 py-14 grid md:grid-cols-2 gap-12 items-center">

@@ -6,11 +6,27 @@ interface Props {
   conflicts: SchedulingConflict[];
 }
 
-function fmt12h(time: string): string {
-  const [h, m] = time.split(":").map(Number);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+const QUARTER_LABELS: Record<string, string> = {
+  Q1: "Q1 (Aug–Oct)",
+  Q2: "Q2 (Oct–Jan)",
+  Q3: "Q3 (Jan–Mar)",
+  Q4: "Q4 (Mar–May)",
+  Custom: "Custom range",
+};
+
+function formatPeriod(c: SchedulingConflict): string {
+  if (!c.isRecurring) {
+    if (!c.specificDate) return "—";
+    return new Date(c.specificDate + "T12:00:00").toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+  if (c.scheduleScope === "Custom") {
+    return `${c.customStartDate ?? ""} – ${c.customEndDate ?? ""}`;
+  }
+  return QUARTER_LABELS[c.scheduleScope ?? ""] ?? c.scheduleScope ?? "—";
 }
 
 export function ConflictTable({ conflicts }: Props) {
@@ -33,10 +49,10 @@ export function ConflictTable({ conflicts }: Props) {
             <tr className="bg-[#F0F7FF] text-left">
               <th className="px-4 py-3 font-semibold text-gray-700">Name</th>
               <th className="px-4 py-3 font-semibold text-gray-700">Days</th>
-              <th className="px-4 py-3 font-semibold text-gray-700">Time</th>
+              <th className="px-4 py-3 font-semibold text-gray-700">Slot</th>
               <th className="px-4 py-3 font-semibold text-gray-700">Activity</th>
-              <th className="px-4 py-3 font-semibold text-gray-700">Recurring</th>
-              <th className="px-4 py-3 font-semibold text-gray-700">Quarters</th>
+              <th className="px-4 py-3 font-semibold text-gray-700">Type</th>
+              <th className="px-4 py-3 font-semibold text-gray-700">Period</th>
               <th className="px-4 py-3 font-semibold text-gray-700">Submitted</th>
             </tr>
           </thead>
@@ -46,18 +62,27 @@ export function ConflictTable({ conflicts }: Props) {
                 key={c.id}
                 className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}
               >
-                <td className="px-4 py-3 font-medium text-gray-800">{c.name}</td>
+                <td className="px-4 py-3 font-medium text-gray-800">
+                  {c.name}
+                </td>
                 <td className="px-4 py-3 text-gray-600">
-                  {c.daysOfWeek.map((d) => d.slice(0, 3)).join(", ")}
+                  {c.isRecurring && c.daysOfWeek && c.daysOfWeek.length > 0
+                    ? c.daysOfWeek.map((d) => d.slice(0, 3)).join(", ")
+                    : <span className="text-gray-400">—</span>}
                 </td>
-                <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
-                  {fmt12h(c.timeStart)} – {fmt12h(c.timeEnd)}
-                </td>
-                <td className="px-4 py-3 text-gray-600 max-w-[200px]">
+                <td className="px-4 py-3 whitespace-nowrap">
                   <span
-                    title={c.reason}
-                    className="block truncate"
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                      c.timeSlot === "Lunch"
+                        ? "bg-amber-50 text-amber-700"
+                        : "bg-purple-50 text-purple-700"
+                    }`}
                   >
+                    {c.timeSlot}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-gray-600 max-w-[180px]">
+                  <span title={c.reason} className="block truncate">
                     {c.reason}
                   </span>
                 </td>
@@ -69,11 +94,13 @@ export function ConflictTable({ conflicts }: Props) {
                         : "bg-gray-100 text-gray-500"
                     }`}
                   >
-                    {c.isRecurring ? "Recurring" : "One-time"}
+                    {c.isRecurring
+                      ? c.recurrenceFrequency ?? "Recurring"
+                      : "One-time"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-600">
-                  {c.quartersAffected.join(", ")}
+                <td className="px-4 py-3 text-gray-600 whitespace-nowrap text-xs">
+                  {formatPeriod(c)}
                 </td>
                 <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-xs">
                   {new Date(c.submittedAt).toLocaleDateString("en-US", {

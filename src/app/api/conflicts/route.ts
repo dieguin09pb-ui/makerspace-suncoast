@@ -1,22 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
-import { conflictSchema, SchedulingConflict, Quarter } from "@/lib/types";
+import { conflictSchema, SchedulingConflict } from "@/lib/types";
 import { getConflicts, appendConflict } from "@/lib/blob";
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const quarterParam = searchParams.getAll("quarter") as Quarter[];
-
+export async function GET() {
   const conflicts = await getConflicts();
-
-  const filtered =
-    quarterParam.length > 0
-      ? conflicts.filter((c) =>
-          c.quartersAffected.some((q) => quarterParam.includes(q))
-        )
-      : conflicts;
-
-  return NextResponse.json(filtered);
+  return NextResponse.json(conflicts);
 }
 
 export async function POST(req: NextRequest) {
