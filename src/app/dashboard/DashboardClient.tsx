@@ -81,8 +81,9 @@ export function DashboardClient({ initialConflicts }: Props) {
     if (selectedQuarters.length === 0) return initialConflicts;
     return initialConflicts.filter((c) => {
       if (c.isRecurring) {
-        if (c.scheduleScope === "Custom") return true;
-        return selectedQuarters.includes(c.scheduleScope as Quarter);
+        const scopes = c.scheduleScope ?? [];
+        if (scopes.includes("Custom")) return true;
+        return scopes.some((s) => selectedQuarters.includes(s as Quarter));
       }
       const q = c.specificDate ? getQuarterForDate(c.specificDate) : null;
       return q ? selectedQuarters.includes(q) : false;
@@ -100,7 +101,7 @@ export function DashboardClient({ initialConflicts }: Props) {
     const byQuarter = QUARTER_IDS.map((q) => ({
       quarter: q,
       count: filtered.filter((c) => {
-        if (c.isRecurring) return c.scheduleScope === q;
+        if (c.isRecurring) return (c.scheduleScope ?? []).includes(q);
         return c.specificDate ? getQuarterForDate(c.specificDate) === q : false;
       }).length,
     }));

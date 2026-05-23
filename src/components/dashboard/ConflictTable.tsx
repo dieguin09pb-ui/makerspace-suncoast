@@ -23,10 +23,13 @@ function formatPeriod(c: SchedulingConflict): string {
       year: "numeric",
     });
   }
-  if (c.scheduleScope === "Custom") {
-    return `${c.customStartDate ?? ""} – ${c.customEndDate ?? ""}`;
-  }
-  return QUARTER_LABELS[c.scheduleScope ?? ""] ?? c.scheduleScope ?? "—";
+  const scopes = c.scheduleScope ?? [];
+  if (scopes.length === 0) return "—";
+  const quarters = scopes.filter((s) => s !== "Custom");
+  const hasCustom = scopes.includes("Custom");
+  const parts: string[] = quarters.map((q) => QUARTER_LABELS[q] ?? q);
+  if (hasCustom) parts.push(`${c.customStartDate ?? ""} – ${c.customEndDate ?? ""}`);
+  return parts.join(", ");
 }
 
 export function ConflictTable({ conflicts }: Props) {
