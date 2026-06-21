@@ -42,6 +42,15 @@
   to { opacity: 1; }
 }
 
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.page-fade-in {
+  animation: pageFadeIn 200ms ease-out both;
+}
+
 /* Calendar grid */
 .calendar-grid {
   display: grid;
