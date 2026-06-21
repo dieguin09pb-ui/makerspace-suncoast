@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { DayOfWeek, TimeSlot, AnalyticsData } from "@/lib/types";
 
@@ -28,7 +28,7 @@ function heatStyle(
   if (count === 0) return { backgroundColor: "#F9FAFB", color: "#D1D5DB" };
   const ratio = max > 0 ? count / max : 0;
   if (ratio < 0.34) return { backgroundColor: "#DBEAFE", color: "#1E40AF" };
-  if (ratio < 0.67) return { backgroundColor: "#5BA4CF", color: "#FFFFFF" };
+  if (ratio < 0.67) return { backgroundColor: "#4F46E5", color: "#FFFFFF" };
   return { backgroundColor: "#1D4ED8", color: "#FFFFFF" };
 }
 
@@ -106,7 +106,7 @@ export function ScheduleGrid({ scheduleGrid }: Props) {
         {[
           { bg: "#F9FAFB", border: "1px solid #E5E7EB", label: "None" },
           { bg: "#DBEAFE", label: "Low" },
-          { bg: "#5BA4CF", label: "Medium" },
+          { bg: "#4F46E5", label: "Medium" },
           { bg: "#1D4ED8", label: "High" },
         ].map((item) => (
           <span key={item.label} className="flex items-center gap-1.5">
@@ -120,8 +120,8 @@ export function ScheduleGrid({ scheduleGrid }: Props) {
       </div>
 
       {(bestDay || bestSlot) && max > 0 && (
-        <div className="mt-4 rounded-lg bg-[#F0F7FF] border border-[#5BA4CF]/30 px-4 py-3 text-sm">
-          <span className="font-semibold text-[#5BA4CF]">Scheduling tip: </span>
+        <div className="mt-4 rounded-lg bg-indigo-50 border border-indigo-600/30 px-4 py-3 text-sm">
+          <span className="font-semibold text-indigo-600">Scheduling tip: </span>
           <span className="text-gray-600">
             {bestDay && bestSlot
               ? `Least conflict on ${bestDay.day} ${bestSlot.slot === "Lunch" ? "at Lunch" : "After School"} — consider that slot for upcoming meetings.`

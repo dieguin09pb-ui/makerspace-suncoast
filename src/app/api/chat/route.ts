@@ -56,7 +56,14 @@ Helpful tools:
 - Arduino IDE: free programming environment for Arduino boards
 - Cura: free 3D printing slicer
 
-Keep answers concise and friendly. Use clear language for high school students. Encourage curiosity. For scheduling/conflict questions, direct to the website's Conflict Form or Calendar pages.`;
+Formatting rules — always follow these:
+- Use **bold** to highlight key terms or steps (e.g., **PLA**, **Ohm's Law**)
+- Use bullet points (- item) for lists of 3 or more items
+- Use numbered steps (1. step) for sequential instructions
+- Use \`inline code\` for code snippets, filenames, or commands
+- Keep paragraphs short — 2-3 sentences max
+- Be friendly and concise; target high school students
+- For scheduling/conflict questions, direct to the Conflict Form or Calendar pages on this site`;
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -79,7 +86,7 @@ export async function POST(req: NextRequest) {
         { role: "system", content: SYSTEM_PROMPT },
         ...messages.slice(-10), // keep last 10 messages for context
       ],
-      max_tokens: 400,
+      max_tokens: 500,
       temperature: 0.7,
     });
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { SchedulingConflict } from "@/lib/types";
 
@@ -49,7 +49,7 @@ export function ConflictTable({ conflicts }: Props) {
       <div className="overflow-x-auto rounded-lg border border-gray-100">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-[#F0F7FF] text-left">
+            <tr className="bg-indigo-50 text-left">
               <th className="px-4 py-3 font-semibold text-gray-700">Name</th>
               <th className="px-4 py-3 font-semibold text-gray-700">Days</th>
               <th className="px-4 py-3 font-semibold text-gray-700">Slot</th>
@@ -93,7 +93,7 @@ export function ConflictTable({ conflicts }: Props) {
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                       c.isRecurring
-                        ? "bg-[#5BA4CF]/10 text-[#5BA4CF]"
+                        ? "bg-indigo-600/10 text-indigo-600"
                         : "bg-gray-100 text-gray-500"
                     }`}
                   >

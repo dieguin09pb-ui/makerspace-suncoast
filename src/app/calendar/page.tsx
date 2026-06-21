@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { QuarterCalendar } from "@/components/calendar/QuarterCalendar";
 import { QUARTERS, formatQuarterDateRange, getMeetingDates } from "@/lib/calendar-data";
@@ -22,7 +22,7 @@ export default function CalendarPage() {
           aria-hidden="true"
         />
         <div>
-          <h1 className="text-3xl font-bold text-[#5BA4CF]">Meeting Calendar</h1>
+          <h1 className="text-3xl font-bold text-indigo-600">Meeting Calendar</h1>
           <p className="text-gray-500">2026–2027 School Year — Meetings every Tuesday after school</p>
         </div>
       </div>
@@ -33,7 +33,7 @@ export default function CalendarPage() {
           const count = getMeetingDates(q).length;
           return (
             <div key={q.id} className="bg-white rounded-lg border border-gray-100 shadow-sm p-3 text-center">
-              <p className="font-bold text-[#5BA4CF] text-lg">{q.id}</p>
+              <p className="font-bold text-indigo-600 text-lg">{q.id}</p>
               <p className="text-xs text-gray-500">{count} meetings</p>
               <p className="text-xs text-gray-400 mt-1">
                 {q.start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} –{" "}
@@ -69,11 +69,11 @@ export default function CalendarPage() {
 
       <div className="mt-8 flex items-center gap-4 text-sm text-gray-500">
         <div className="flex items-center gap-2">
-          <span className="w-4 h-4 rounded-full bg-[#5BA4CF] inline-block" />
+          <span className="w-4 h-4 rounded-full bg-indigo-600 inline-block" />
           <span>Makerspace meeting (Tuesday)</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-4 h-4 rounded-full border-2 border-[#5BA4CF] inline-block" />
+          <span className="w-4 h-4 rounded-full border-2 border-indigo-600 inline-block" />
           <span>Today</span>
         </div>
       </div>

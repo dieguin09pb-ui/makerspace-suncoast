@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
@@ -41,8 +41,8 @@ function QuarterToggle({
       className={cn(
         "px-3 py-1.5 rounded-full text-sm font-medium border transition-colors",
         active
-          ? "bg-[#5BA4CF] text-white border-[#5BA4CF]"
-          : "bg-white text-gray-600 border-gray-300 hover:border-[#5BA4CF] hover:text-[#5BA4CF]"
+          ? "bg-indigo-600 text-white border-indigo-600"
+          : "bg-white text-gray-600 border-gray-300 hover:border-indigo-600 hover:text-indigo-600"
       )}
     >
       {children}
@@ -62,7 +62,7 @@ function StatCard({
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
       <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-3xl font-bold text-[#5BA4CF] mt-1">{value}</p>
+      <p className="text-3xl font-bold text-indigo-600 mt-1">{value}</p>
       {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
     </div>
   );
@@ -158,7 +158,7 @@ export function DashboardClient({ initialConflicts }: Props) {
           aria-hidden="true"
         />
         <div>
-          <h1 className="text-3xl font-bold text-[#5BA4CF]">Conflict Dashboard</h1>
+          <h1 className="text-3xl font-bold text-indigo-600">Conflict Dashboard</h1>
           <p className="text-gray-500">Scheduling conflict overview — 2026–2027</p>
         </div>
       </div>
@@ -187,7 +187,7 @@ export function DashboardClient({ initialConflicts }: Props) {
         )}
       </div>
       {selectedQuarters.length > 0 && (
-        <p className="text-xs text-[#5BA4CF] mt-2">
+        <p className="text-xs text-indigo-600 mt-2">
           Showing data for: {selectedQuarters.join(", ")}
         </p>
       )}

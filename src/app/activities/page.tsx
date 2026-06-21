@@ -1,4 +1,4 @@
-import { getConflicts } from "@/lib/blob";
+﻿import { getConflicts } from "@/lib/blob";
 import { SchedulingConflict } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -48,7 +48,7 @@ export default async function ActivitiesPage() {
           aria-hidden="true"
         />
         <div>
-          <h1 className="text-3xl font-bold text-[#5BA4CF]">
+          <h1 className="text-3xl font-bold text-indigo-600">
             Submitted Activities
           </h1>
           <p className="text-gray-500">
@@ -91,7 +91,7 @@ export default async function ActivitiesPage() {
                   <span
                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                       c.isRecurring
-                        ? "bg-[#5BA4CF]/10 text-[#5BA4CF]"
+                        ? "bg-indigo-600/10 text-indigo-600"
                         : "bg-gray-100 text-gray-500"
                     }`}
                   >

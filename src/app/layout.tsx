@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description:
     "STEM Club at Suncoast Community High School — scheduling, calendar, and conflict management for the 2026-2027 school year.",
   icons: {
-    icon: "/images/Brain.png",
-    apple: "/images/Brain.png",
+    icon: "/images/makerspaceLogoSimplified.png",
+    apple: "/images/makerspaceLogoSimplified.png",
   },
 };
 
