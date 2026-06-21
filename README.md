@@ -55,8 +55,8 @@ Floating chat widget (bottom-right) powered by OpenAI. Abhi answers questions ab
 ### 3D Progress Viewer
 `/progress` renders interactive STL models (drone chassis, greenhouse, belt holder) and GLB files (flying drone, train) using `@google/model-viewer` and Three.js, alongside real photos of finished builds.
 
-### Meeting Calendar
-`/calendar` shows Q1–Q4 tabs with every Tuesday highlighted as a meeting day, aligned to the 2026–2027 Palm Beach County School District calendar.
+### Meeting endar
+`/endar` shows Q1–Q4 tabs with every Tuesday highlighted as a meeting day, aligned to the 2026–2027 Palm Beach County School District endar.
 
 ### Page Transitions
 Every route change triggers a smooth 200ms fade-in via `app/template.tsx`.
@@ -87,21 +87,6 @@ Stored in Vercel Blob at `makerspace/conflicts.json`:
   quartersAffected: string[]
 }
 ```
-
----
-
-## School Calendar (2026–2027)
-
-| Quarter | Dates |
-|---|---|
-| Q1 | Aug 17 – Oct 16, 2026 |
-| Q2 | Oct 19, 2026 – Jan 8, 2027 |
-| Q3 | Jan 11 – Mar 12, 2027 |
-| Q4 | Mar 15 – May 28, 2027 |
-
-Meeting day: **Tuesday after school (~3:30 PM)**
-
----
 
 ## Local Development
 
