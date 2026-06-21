@@ -27,7 +27,7 @@ export function RecurringChart({ recurring, total }: Props) {
 
   const data = [
     { name: "Recurring", value: recurring, color: "#8B5CF6" },
-    { name: "One-time", value: oneTime, color: "#93C5FD" },
+    { name: "One-time", value: oneTime, color: "#818CF8" },
   ].filter((d) => d.value > 0);
 
   return (

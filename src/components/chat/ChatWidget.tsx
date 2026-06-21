@@ -1,9 +1,82 @@
-"use client";
+﻿"use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { X, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// ── Lightweight markdown renderer ─────────────────────────────────────────────
+function renderInline(text: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**"))
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    if (part.startsWith("*") && part.endsWith("*"))
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    if (part.startsWith("`") && part.endsWith("`"))
+      return (
+        <code key={i} className="bg-indigo-100 text-indigo-700 px-1 py-0.5 rounded text-[11px] font-mono">
+          {part.slice(1, -1)}
+        </code>
+      );
+    return part;
+  });
+}
+
+function renderMarkdown(text: string): React.ReactNode {
+  const lines = text.split("\n");
+  const out: React.ReactNode[] = [];
+  let listItems: string[] = [];
+  let listType: "ul" | "ol" | null = null;
+
+  const flushList = (key: string) => {
+    if (!listItems.length) return;
+    if (listType === "ul") {
+      out.push(
+        <ul key={key} className="list-disc pl-4 space-y-0.5 my-1">
+          {listItems.map((item, j) => <li key={j}>{renderInline(item)}</li>)}
+        </ul>
+      );
+    } else {
+      out.push(
+        <ol key={key} className="list-decimal pl-4 space-y-0.5 my-1">
+          {listItems.map((item, j) => <li key={j}>{renderInline(item)}</li>)}
+        </ol>
+      );
+    }
+    listItems = [];
+    listType = null;
+  };
+
+  lines.forEach((line, i) => {
+    const ulMatch = /^[-*•]\s+(.+)/.exec(line);
+    const olMatch = /^\d+\.\s+(.+)/.exec(line);
+
+    if (ulMatch) {
+      if (listType && listType !== "ul") flushList(`l${i}`);
+      listType = "ul";
+      listItems.push(ulMatch[1]);
+      return;
+    }
+    if (olMatch) {
+      if (listType && listType !== "ol") flushList(`l${i}`);
+      listType = "ol";
+      listItems.push(olMatch[1]);
+      return;
+    }
+
+    flushList(`l${i}`);
+
+    if (line.trim() === "") {
+      out.push(<div key={`sp${i}`} className="h-1" />);
+      return;
+    }
+    out.push(<p key={`p${i}`} className="leading-relaxed">{renderInline(line)}</p>);
+  });
+
+  flushList("final");
+  return <>{out}</>;
+}
 
 interface Message {
   role: "user" | "assistant";
@@ -66,7 +139,7 @@ export function ChatWidget() {
         onClick={() => setOpen((o) => !o)}
         className={cn(
           "fixed bottom-5 right-5 z-50 flex items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95",
-          "w-16 h-16 overflow-hidden border-2 border-[#5BA4CF] bg-white"
+          "w-16 h-16 overflow-hidden border-2 border-indigo-600 bg-white"
         )}
         aria-label="Chat with Abhi"
       >
@@ -83,7 +156,7 @@ export function ChatWidget() {
       {open && (
         <div className="fixed bottom-24 right-5 z-50 w-80 sm:w-96 rounded-2xl shadow-2xl border border-gray-200 bg-white flex flex-col overflow-hidden max-h-[70vh]">
           {/* Header */}
-          <div className="flex items-center gap-2 bg-[#5BA4CF] px-4 py-3">
+          <div className="flex items-center gap-2 bg-indigo-600 px-4 py-3">
             <Image
               src="/images/NerdAbhi.png"
               alt="Abhi"
@@ -125,13 +198,13 @@ export function ChatWidget() {
                 )}
                 <div
                   className={cn(
-                    "max-w-[75%] rounded-2xl px-3 py-2 text-sm leading-relaxed",
+                    "max-w-[75%] rounded-2xl px-3 py-2 text-sm",
                     msg.role === "user"
-                      ? "bg-[#5BA4CF] text-white rounded-br-sm"
-                      : "bg-[#F0F7FF] text-gray-800 rounded-bl-sm"
+                      ? "bg-indigo-600 text-white rounded-br-sm leading-relaxed"
+                      : "bg-indigo-50 text-gray-800 rounded-bl-sm space-y-0.5"
                   )}
                 >
-                  {msg.content}
+                  {msg.role === "user" ? msg.content : renderMarkdown(msg.content)}
                 </div>
               </div>
             ))}
@@ -144,11 +217,11 @@ export function ChatWidget() {
                   height={24}
                   className="rounded-full flex-shrink-0 object-cover"
                 />
-                <div className="bg-[#F0F7FF] rounded-2xl rounded-bl-sm px-3 py-2">
+                <div className="bg-indigo-50 rounded-2xl rounded-bl-sm px-3 py-2">
                   <span className="flex gap-1">
-                    <span className="w-2 h-2 bg-[#5BA4CF] rounded-full animate-bounce [animation-delay:0ms]" />
-                    <span className="w-2 h-2 bg-[#5BA4CF] rounded-full animate-bounce [animation-delay:150ms]" />
-                    <span className="w-2 h-2 bg-[#5BA4CF] rounded-full animate-bounce [animation-delay:300ms]" />
+                    <span className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce [animation-delay:0ms]" />
+                    <span className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce [animation-delay:150ms]" />
+                    <span className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce [animation-delay:300ms]" />
                   </span>
                 </div>
               </div>
@@ -164,13 +237,13 @@ export function ChatWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder="Ask Abhi anything..."
-              className="flex-1 text-sm rounded-full border border-gray-200 px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#5BA4CF]"
+              className="flex-1 text-sm rounded-full border border-gray-200 px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-600"
               disabled={loading}
             />
             <button
               onClick={send}
               disabled={!input.trim() || loading}
-              className="bg-[#5BA4CF] text-white rounded-full p-1.5 hover:bg-[#4a93be] disabled:opacity-40 transition-colors flex-shrink-0"
+              className="bg-indigo-600 text-white rounded-full p-1.5 hover:bg-indigo-700 disabled:opacity-40 transition-colors flex-shrink-0"
               aria-label="Send"
             >
               <Send className="h-4 w-4" />

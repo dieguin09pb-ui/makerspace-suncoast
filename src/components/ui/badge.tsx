@@ -1,4 +1,4 @@
-import * as React from "react";
+﻿import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -8,14 +8,14 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-[#5BA4CF] text-white",
+          "border-transparent bg-indigo-600 text-white",
         secondary:
-          "border-transparent bg-[#F0F7FF] text-[#5BA4CF]",
+          "border-transparent bg-indigo-50 text-indigo-600",
         destructive:
           "border-transparent bg-red-500 text-white",
         outline: "text-gray-600",
         meeting:
-          "border-transparent bg-[#5BA4CF] text-white font-bold",
+          "border-transparent bg-indigo-600 text-white font-bold",
       },
     },
     defaultVariants: {

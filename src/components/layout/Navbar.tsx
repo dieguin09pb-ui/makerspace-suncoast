@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -10,8 +10,10 @@ import { useState } from "react";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/calendar", label: "Calendar" },
+  { href: "/progress", label: "Progress" },
   { href: "/conflict", label: "Report Conflict" },
-  { href: "/activities", label: "Activities" },
+  { href: "/org", label: "Org" },
+  { href: "/contact", label: "Contact" },
   { href: "/dashboard", label: "Dashboard" },
 ];
 
@@ -24,13 +26,13 @@ export function Navbar() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/images/Brain.png"
+            src="/images/makerspaceLogo.png"
             alt="Makerspace logo"
-            width={36}
-            height={36}
-            className="object-contain"
+            width={1610}
+            height={741}
+            className="h-14 w-auto object-contain"
           />
-          <span className="text-lg font-bold text-[#5BA4CF]">
+          <span className="text-lg font-bold text-indigo-600">
             Makerspace<span className="text-gray-400 font-normal text-sm ml-1">@ Suncoast</span>
           </span>
         </Link>
@@ -44,8 +46,8 @@ export function Navbar() {
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 pathname === link.href
-                  ? "bg-[#F0F7FF] text-[#5BA4CF]"
-                  : "text-gray-600 hover:bg-[#F0F7FF] hover:text-[#5BA4CF]"
+                  ? "bg-indigo-50 text-indigo-600"
+                  : "text-gray-600 hover:bg-indigo-50 hover:text-indigo-600"
               )}
             >
               {link.label}
@@ -55,7 +57,7 @@ export function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden p-2 rounded-md text-gray-500 hover:bg-[#F0F7FF]"
+          className="md:hidden p-2 rounded-md text-gray-500 hover:bg-indigo-50"
           onClick={() => setMobileOpen((o) => !o)}
           aria-label="Toggle menu"
         >
@@ -74,8 +76,8 @@ export function Navbar() {
               className={cn(
                 "block rounded-md px-3 py-2 text-sm font-medium mt-1 transition-colors",
                 pathname === link.href
-                  ? "bg-[#F0F7FF] text-[#5BA4CF]"
-                  : "text-gray-600 hover:bg-[#F0F7FF] hover:text-[#5BA4CF]"
+                  ? "bg-indigo-50 text-indigo-600"
+                  : "text-gray-600 hover:bg-indigo-50 hover:text-indigo-600"
               )}
             >
               {link.label}

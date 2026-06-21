@@ -17,7 +17,7 @@ interface Props {
 }
 
 const QUARTER_COLORS: Record<string, string> = {
-  Q1: "#5BA4CF",
+  Q1: "#4F46E5",
   Q2: "#F59E0B",
   Q3: "#34D399",
   Q4: "#EC4899",

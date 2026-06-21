@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import * as ToastPrimitive from "@radix-ui/react-toast";
@@ -30,7 +30,7 @@ const toastVariants = cva(
       variant: {
         default: "border bg-white text-gray-900",
         destructive: "destructive group border-red-500 bg-red-500 text-white",
-        success: "border-[#5BA4CF] bg-[#F0F7FF] text-[#5BA4CF]",
+        success: "border-indigo-600 bg-indigo-50 text-indigo-600",
       },
     },
     defaultVariants: {

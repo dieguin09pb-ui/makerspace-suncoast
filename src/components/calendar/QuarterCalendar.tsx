@@ -1,4 +1,4 @@
-import { QuarterInfo, getMeetingDates } from "@/lib/calendar-data";
+﻿import { QuarterInfo, getMeetingDates } from "@/lib/calendar-data";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -61,7 +61,7 @@ export function QuarterCalendar({ quarter }: Props) {
 
         return (
           <div key={`${year}-${month}`} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="bg-[#5BA4CF] text-white px-4 py-3">
+            <div className="bg-indigo-600 text-white px-4 py-3">
               <h3 className="font-semibold text-lg">
                 {MONTH_NAMES[month]} {year}
               </h3>
@@ -74,7 +74,7 @@ export function QuarterCalendar({ quarter }: Props) {
                     key={d}
                     className={cn(
                       "text-center text-xs font-semibold py-1",
-                      d === "Tue" ? "text-[#5BA4CF]" : "text-gray-400"
+                      d === "Tue" ? "text-indigo-600" : "text-gray-400"
                     )}
                   >
                     {d}
@@ -101,9 +101,9 @@ export function QuarterCalendar({ quarter }: Props) {
                         "h-9 flex items-center justify-center rounded-md text-sm transition-colors",
                         !isInQuarter && "opacity-30",
                         isMeeting &&
-                          "bg-[#5BA4CF] text-white font-bold rounded-full cursor-default",
-                        !isMeeting && isInQuarter && "text-gray-700 hover:bg-[#F0F7FF]",
-                        isToday && !isMeeting && "ring-2 ring-[#5BA4CF] ring-offset-1"
+                          "bg-indigo-600 text-white font-bold rounded-full cursor-default",
+                        !isMeeting && isInQuarter && "text-gray-700 hover:bg-indigo-50",
+                        isToday && !isMeeting && "ring-2 ring-indigo-600 ring-offset-1"
                       )}
                       title={isMeeting ? "Makerspace Meeting" : undefined}
                     >
@@ -121,7 +121,7 @@ export function QuarterCalendar({ quarter }: Props) {
               if (monthMeetings.length === 0) return null;
               return (
                 <div className="px-3 pb-3">
-                  <p className="text-xs text-[#5BA4CF] bg-[#F0F7FF] rounded-md px-2 py-1 inline-block">
+                  <p className="text-xs text-indigo-600 bg-indigo-50 rounded-md px-2 py-1 inline-block">
                     {monthMeetings.length} meeting{monthMeetings.length > 1 ? "s" : ""} this month
                   </p>
                 </div>
@@ -140,7 +140,7 @@ export function QuarterCalendar({ quarter }: Props) {
               key={d.toISOString()}
               className="flex items-center gap-2 text-sm text-gray-600"
             >
-              <span className="w-2 h-2 rounded-full bg-[#5BA4CF] flex-shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-indigo-600 flex-shrink-0" />
               {d.toLocaleDateString("en-US", {
                 weekday: "short",
                 month: "short",

@@ -18,7 +18,7 @@ interface Props {
 }
 
 const DAY_COLORS = [
-  "#5BA4CF", // Mon - brand blue
+  "#4F46E5", // Mon - brand blue
   "#34D399", // Tue - green (the meeting day)
   "#F59E0B", // Wed - amber
   "#EC4899", // Thu - pink

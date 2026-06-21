@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -66,8 +66,8 @@ function ToggleButton({
       className={cn(
         "px-3 py-1.5 rounded-md text-sm font-medium border transition-colors select-none",
         active
-          ? "bg-[#5BA4CF] text-white border-[#5BA4CF]"
-          : "bg-white text-gray-600 border-gray-300 hover:border-[#5BA4CF] hover:text-[#5BA4CF]"
+          ? "bg-indigo-600 text-white border-indigo-600"
+          : "bg-white text-gray-600 border-gray-300 hover:border-indigo-600 hover:text-indigo-600"
       )}
     >
       {children}
@@ -201,8 +201,8 @@ export function ConflictForm() {
                   className={cn(
                     "rounded-lg border p-3 text-left transition-colors",
                     field.value === slot.value
-                      ? "border-[#5BA4CF] bg-[#F0F7FF]"
-                      : "border-gray-200 bg-white hover:border-[#5BA4CF]/50"
+                      ? "border-indigo-600 bg-indigo-50"
+                      : "border-gray-200 bg-white hover:border-indigo-600/50"
                   )}
                 >
                   <p className="font-medium text-sm text-gray-800">
@@ -287,7 +287,7 @@ export function ConflictForm() {
                   onChange={(e) =>
                     field.onChange(e.target.value || undefined)
                   }
-                  className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-[#5BA4CF]"
+                  className="flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
                 >
                   <option value="">Select frequency...</option>
                   {RECURRENCE_OPTIONS.map((o) => (
@@ -345,7 +345,7 @@ export function ConflictForm() {
 
           {/* Custom date range */}
           {scheduleScope.includes("Custom") && (
-            <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-[#5BA4CF]/40">
+            <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-indigo-600/40">
               <div className="space-y-1.5">
                 <Label htmlFor="customStartDate">From</Label>
                 <Input
