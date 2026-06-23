@@ -102,7 +102,7 @@ export function DroneFlightHero() {
       );
 
       // ── Reveal each drone only once its model-viewer has fully loaded ──
-      const revealOnLoad = (wrapperRef: React.RefObject<HTMLDivElement>) => {
+      const revealOnLoad = (wrapperRef: React.RefObject<HTMLDivElement | null>) => {
         const mv = wrapperRef.current?.querySelector("model-viewer") as HTMLElement | null;
         if (!mv) return;
         const reveal = () =>
