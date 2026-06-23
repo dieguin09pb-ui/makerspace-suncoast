@@ -3,6 +3,7 @@ import { SchedulingConflict } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const QUARTER_LABELS: Record<string, string> = {
   Q1: "Q1 — Aug 17 to Oct 16, 2026",
@@ -67,17 +68,19 @@ export default async function ActivitiesPage() {
       </div>
 
       {conflicts.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 bg-white rounded-xl border border-gray-100 shadow-sm">
-          <p className="text-lg font-medium">No activities submitted yet</p>
-          <p className="text-sm mt-1">
-            Members can report conflicts using the conflict form.
-          </p>
-        </div>
+        <ScrollReveal direction="up">
+          <div className="text-center py-16 text-gray-400 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <p className="text-lg font-medium">No activities submitted yet</p>
+            <p className="text-sm mt-1">
+              Members can report conflicts using the conflict form.
+            </p>
+          </div>
+        </ScrollReveal>
       ) : (
         <div className="space-y-4">
-          {sorted.map((c) => (
+          {sorted.map((c, i) => (
+            <ScrollReveal key={c.id} direction="up" delay={Math.min(i * 60, 300)}>
             <div
-              key={c.id}
               className="bg-white rounded-xl border border-gray-100 shadow-sm p-5"
             >
               <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -163,6 +166,7 @@ export default async function ActivitiesPage() {
                 })}
               </div>
             </div>
+            </ScrollReveal>
           ))}
         </div>
       )}

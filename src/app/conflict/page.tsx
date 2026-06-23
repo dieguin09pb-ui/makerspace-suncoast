@@ -1,5 +1,6 @@
 ﻿import Image from "next/image";
 import { ConflictForm } from "@/components/conflict/ConflictForm";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function ConflictPage() {
       </div>
 
       {/* Info box */}
+      <ScrollReveal direction="up" delay={50}>
       <div className="mt-6 mb-8 rounded-xl bg-indigo-50 border border-indigo-200 px-5 py-4">
         <p className="text-sm text-gray-700 leading-relaxed">
           Makerspace meets every <strong>Tuesday after school</strong>. If you
@@ -39,11 +41,14 @@ export default function ConflictPage() {
           After School (2:40 PM onwards), recurring throughout Q2 and Q3.
         </p>
       </div>
+      </ScrollReveal>
 
       {/* Form */}
+      <ScrollReveal direction="up" delay={120}>
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
         <ConflictForm />
       </div>
+      </ScrollReveal>
 
       <p className="mt-4 text-xs text-gray-400 text-center">
         Submitted information is used only for scheduling purposes within the Makerspace club.

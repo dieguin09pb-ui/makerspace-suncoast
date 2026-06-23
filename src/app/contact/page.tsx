@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "Contact — Makerspace @ Suncoast",
@@ -10,13 +11,16 @@ export default function ContactPage() {
       <div className="mx-auto max-w-2xl px-4 py-12">
 
         {/* Header */}
-        <span className="text-xs font-semibold tracking-widest uppercase text-indigo-500">Contact</span>
-        <h1 className="text-4xl font-black text-gray-900 mt-1 mb-2">Get in Touch</h1>
-        <p className="text-gray-500 text-sm mb-8">
-          Questions about joining, sponsorships, or just want to know more? Reach out below.
-        </p>
+        <ScrollReveal direction="up">
+          <span className="text-xs font-semibold tracking-widest uppercase text-indigo-500">Contact</span>
+          <h1 className="text-4xl font-black text-gray-900 mt-1 mb-2">Get in Touch</h1>
+          <p className="text-gray-500 text-sm mb-8">
+            Questions about joining, sponsorships, or just want to know more? Reach out below.
+          </p>
+        </ScrollReveal>
 
         {/* Email card */}
+        <ScrollReveal direction="up" delay={100}>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
           <h2 className="font-bold text-gray-800 text-lg mb-1">Email Us</h2>
           <p className="text-sm text-gray-500 mb-3">
@@ -29,8 +33,10 @@ export default function ContactPage() {
             suncoastmakerspace@gmail.com
           </a>
         </div>
+        </ScrollReveal>
 
         {/* Google Form */}
+        <ScrollReveal direction="up" delay={150}>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="font-bold text-gray-800 text-lg mb-1">Contact Form</h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -59,8 +65,10 @@ export default function ContactPage() {
             .
           </p>
         </div>
+        </ScrollReveal>
 
         {/* Social Media */}
+        <ScrollReveal direction="left" delay={100}>
         <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="font-bold text-gray-800 text-lg mb-1">Follow Us</h2>
           <p className="text-sm text-gray-500 mb-4">Stay up-to-date on builds, events, and announcements.</p>
@@ -86,7 +94,10 @@ export default function ContactPage() {
           </div>
         </div>
 
+        </ScrollReveal>
+
         {/* Location */}
+        <ScrollReveal direction="right" delay={100}>
         <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="font-bold text-gray-800 text-lg mb-1">Find Us</h2>
           <p className="text-sm text-gray-500">
@@ -95,6 +106,7 @@ export default function ContactPage() {
             <span className="text-indigo-600 font-medium">Meetings: Every Tuesday after school (2:40 PM)</span>
           </p>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

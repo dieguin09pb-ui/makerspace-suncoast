@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import Image from "next/image";
 
 function DroneViewer({ cameraOrbit = "30deg 75deg 2.5m" }: { cameraOrbit?: string }) {
   return React.createElement("model-viewer", {
@@ -19,9 +18,7 @@ function DroneViewer({ cameraOrbit = "30deg 75deg 2.5m" }: { cameraOrbit?: strin
       height: "240px",
       background: "transparent",
       "--poster-color": "transparent",
-      // Delay reveal so the model-viewer canvas initializes its transparent bg before showing
-      opacity: 0,
-      animation: "mvFadeIn 0.01s 0.7s ease forwards",
+      display: "block",
     } as React.CSSProperties,
   });
 }
@@ -39,7 +36,6 @@ function TrainViewer() {
       height: "180px",
       background: "transparent",
       "--poster-color": "transparent",
-      // Mostly white with light-gray accents: desaturate, extreme brightness, soft contrast
       filter: "grayscale(1) brightness(2.5) contrast(0.55)",
     } as React.CSSProperties,
   });
@@ -47,37 +43,49 @@ function TrainViewer() {
 
 export function DroneFlightHero() {
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const droneRef  = useRef<HTMLDivElement>(null);
-  const pathRef   = useRef<SVGPathElement>(null);
-  const drone2Ref = useRef<HTMLDivElement>(null);
-  const path2Ref  = useRef<SVGPathElement>(null);
-  const trainRef  = useRef<HTMLDivElement>(null);
-
-  const svgRef    = useRef<SVGSVGElement>(null);
-  const panel1Ref = useRef<HTMLDivElement>(null);
-  const panel2Ref = useRef<HTMLDivElement>(null);
-  const panel3Ref = useRef<HTMLDivElement>(null);
-  const orb1Ref   = useRef<HTMLDivElement>(null);
-  const orb2Ref   = useRef<HTMLDivElement>(null);
+  const droneRef    = useRef<HTMLDivElement>(null);
+  const pathRef     = useRef<SVGPathElement>(null);
+  const drone2Ref   = useRef<HTMLDivElement>(null);
+  const path2Ref    = useRef<SVGPathElement>(null);
+  const trainRef    = useRef<HTMLDivElement>(null);
+  const svgRef      = useRef<SVGSVGElement>(null);
+  const panel1Ref   = useRef<HTMLDivElement>(null);
+  const panel2Ref   = useRef<HTMLDivElement>(null);
+  const panel3Ref   = useRef<HTMLDivElement>(null);
+  const orb1Ref     = useRef<HTMLDivElement>(null);
+  const orb2Ref     = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     import("@google/model-viewer");
 
     let gsapCtx: ReturnType<typeof import("gsap")["default"]["context"]> | undefined;
+    let introRaf: number;
 
     const init = async () => {
       const { default: gsap } = await import("gsap");
-      const { ScrollTrigger }    = await import("gsap/ScrollTrigger");
-      const { MotionPathPlugin }  = await import("gsap/MotionPathPlugin");
+      const { ScrollTrigger }   = await import("gsap/ScrollTrigger");
+      const { MotionPathPlugin } = await import("gsap/MotionPathPlugin");
       gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
       const w = window.innerWidth;
       const h = window.innerHeight;
+      const isMobile = w < 768;
 
       svgRef.current?.setAttribute("viewBox", `0 0 ${w} ${h}`);
 
-      // ── Drone 1: lower track (stays in bottom 25% until late scroll, avoids all text panels)
+      // ── Scale drones on mobile ───────────────────────────────────────
+      if (isMobile) {
+        const mv1 = droneRef.current?.querySelector("model-viewer") as HTMLElement | null;
+        const mv2 = drone2Ref.current?.querySelector("model-viewer") as HTMLElement | null;
+        if (mv1) { mv1.style.width = "160px"; mv1.style.height = "128px"; }
+        if (mv2) { mv2.style.width = "160px"; mv2.style.height = "128px"; }
+        gsap.set([droneRef.current, drone2Ref.current], {
+          scale: 0.55,
+          transformOrigin: "center center",
+        });
+      }
+
+      // ── Flight paths ─────────────────────────────────────────────────
       pathRef.current?.setAttribute("d",
         `M ${w * 0.03},${h * 0.96}` +
         ` C ${w * 0.12},${h * 0.88} ${w * 0.28},${h * 0.82} ${w * 0.44},${h * 0.80}` +
@@ -86,8 +94,6 @@ export function DroneFlightHero() {
         ` L ${w * 1.15},${h * -0.05}`
       );
 
-      // ── Drone 2: upper track (starts upper-right, drifts upper-left, stays above text)
-      // autoRotate disabled — drones naturally face any direction; avoids the ugly 180° flip
       path2Ref.current?.setAttribute("d",
         `M ${w * 1.08},${h * 0.18}` +
         ` C ${w * 0.88},${h * 0.12} ${w * 0.72},${h * 0.10} ${w * 0.58},${h * 0.16}` +
@@ -95,10 +101,24 @@ export function DroneFlightHero() {
         ` S ${w * 0.10},${h * 0.32} ${w * -0.06},${h * 0.38}`
       );
 
+      // ── Reveal each drone only once its model-viewer has fully loaded ──
+      const revealOnLoad = (wrapperRef: React.RefObject<HTMLDivElement>) => {
+        const mv = wrapperRef.current?.querySelector("model-viewer") as HTMLElement | null;
+        if (!mv) return;
+        const reveal = () =>
+          gsap.to(wrapperRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" });
+        mv.addEventListener("load", reveal, { once: true });
+        // Fallback: reveal after 5s if the load event never fires (e.g. cached)
+        setTimeout(() => {
+          const el = wrapperRef.current;
+          if (el && parseFloat(window.getComputedStyle(el).opacity) < 0.5) reveal();
+        }, 5000);
+      };
+
       gsapCtx = gsap.context(() => {
 
-        // ── Drone 1 — banks along the path (autoRotate fine for upward climb) ──
-        gsap.set(droneRef.current, { opacity: 1 });
+        // ── Drone 1 ───────────────────────────────────────────────────
+        gsap.set(droneRef.current, { opacity: 0 });
         gsap.to(droneRef.current, {
           motionPath: {
             path: pathRef.current!,
@@ -111,8 +131,8 @@ export function DroneFlightHero() {
           force3D: true,
         });
 
-        // ── Drone 2 — no autoRotate so it doesn't flip while crossing right→left ──
-        gsap.set(drone2Ref.current, { opacity: 1 });
+        // ── Drone 2 ───────────────────────────────────────────────────
+        gsap.set(drone2Ref.current, { opacity: 0 });
         gsap.to(drone2Ref.current, {
           motionPath: {
             path: path2Ref.current!,
@@ -125,7 +145,7 @@ export function DroneFlightHero() {
           force3D: true,
         });
 
-        // ── Train: right→left along bottom, appears once drones have cleared centre ──
+        // ── Train ─────────────────────────────────────────────────────
         gsap.set(trainRef.current, { x: w * 1.15, opacity: 0 });
         gsap.to(trainRef.current, {
           opacity: 1,
@@ -172,14 +192,52 @@ export function DroneFlightHero() {
         });
 
       }, containerRef);
+
+      // Trigger drone reveals (after scroll triggers are set up)
+      revealOnLoad(droneRef);
+      revealOnLoad(drone2Ref);
+
+      // ── Intro: auto-scroll for 2.5 s, then hand off to user ──────────
+      const container = containerRef.current;
+      if (!container) return;
+
+      const scrollStart  = container.offsetTop;
+      const scrollRange  = container.offsetHeight - window.innerHeight;
+      const introTarget  = scrollStart + scrollRange * 0.30; // advance 30% through the hero
+      const INTRO_MS     = 2500;
+      const startTime    = performance.now();
+      let cancelled      = false;
+
+      const cancelIntro = () => { cancelled = true; };
+      window.addEventListener("wheel",      cancelIntro, { once: true, passive: true });
+      window.addEventListener("touchstart", cancelIntro, { once: true, passive: true });
+      window.addEventListener("keydown",    cancelIntro, { once: true });
+
+      const scrollRAF = (now: number) => {
+        if (cancelled) return;
+        const t      = Math.min((now - startTime) / INTRO_MS, 1);
+        const eased  = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2; // easeInOutCubic
+        window.scrollTo(0, introTarget * eased);
+        if (t < 1) {
+          introRaf = requestAnimationFrame(scrollRAF);
+        } else {
+          window.removeEventListener("wheel",      cancelIntro);
+          window.removeEventListener("touchstart", cancelIntro);
+          window.removeEventListener("keydown",    cancelIntro);
+        }
+      };
+      introRaf = requestAnimationFrame(scrollRAF);
     };
 
     init();
-    return () => { gsapCtx?.revert(); };
+    return () => {
+      gsapCtx?.revert();
+      cancelAnimationFrame(introRaf);
+    };
   }, []);
 
   return (
-    <div ref={containerRef} className="relative h-[300vh]">
+    <div ref={containerRef} className="relative h-[180vh] md:h-[300vh]">
       <div className="sticky top-0 h-screen overflow-hidden bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-950">
 
         {/* Depth orbs */}
@@ -193,14 +251,14 @@ export function DroneFlightHero() {
           <path ref={path2Ref} d="" fill="none" stroke="none" />
         </svg>
 
-        {/* Drone 1 — lower track, climbs dramatically at end */}
-        <div ref={droneRef} className="absolute will-change-transform opacity-0" style={{ top: 0, left: 0 }}>
+        {/* Drone 1 — hidden until model-viewer fires load */}
+        <div ref={droneRef} className="absolute will-change-transform" style={{ opacity: 0, top: 0, left: 0 }}>
           <div className="absolute inset-0 -z-10 blur-2xl bg-indigo-400/30 rounded-full scale-[1.8] pointer-events-none" />
           <DroneViewer cameraOrbit="30deg 75deg 2.5m" />
         </div>
 
-        {/* Drone 2 — upper track, drifts right→left without flipping */}
-        <div ref={drone2Ref} className="absolute will-change-transform opacity-0" style={{ top: 0, left: 0 }}>
+        {/* Drone 2 — hidden until model-viewer fires load */}
+        <div ref={drone2Ref} className="absolute will-change-transform" style={{ opacity: 0, top: 0, left: 0 }}>
           <div className="absolute inset-0 -z-10 blur-2xl bg-violet-400/25 rounded-full scale-[1.8] pointer-events-none" />
           <DroneViewer cameraOrbit="210deg 75deg 2.5m" />
         </div>
@@ -210,7 +268,7 @@ export function DroneFlightHero() {
           <TrainViewer />
         </div>
 
-        {/* Text panel 1 — left side, vertical center */}
+        {/* Text panel 1 */}
         <div ref={panel1Ref} className="absolute inset-0 flex items-center justify-start px-8 md:px-20 pointer-events-none" style={{ opacity: 0 }}>
           <div className="max-w-xl">
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-[1.05] tracking-tight">
@@ -219,7 +277,7 @@ export function DroneFlightHero() {
           </div>
         </div>
 
-        {/* Text panel 2 — right side, vertical center */}
+        {/* Text panel 2 */}
         <div ref={panel2Ref} className="absolute inset-0 flex items-center justify-end px-8 md:px-20 pointer-events-none" style={{ opacity: 0 }}>
           <div className="max-w-md text-right">
             <p className="text-xl md:text-2xl text-white/90 font-medium leading-relaxed">
@@ -229,7 +287,7 @@ export function DroneFlightHero() {
           </div>
         </div>
 
-        {/* Text panel 3 — center */}
+        {/* Text panel 3 */}
         <div ref={panel3Ref} className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0 }}>
           <div className="text-center px-4">
             <p className="text-4xl md:text-6xl font-black text-white">By Students.</p>
@@ -241,54 +299,20 @@ export function DroneFlightHero() {
           </div>
         </div>
 
-        {/* Club badge */}
-        <div className="absolute top-5 left-5 flex items-center gap-3 pointer-events-none select-none">
-          <Image
-            src="/images/makerspaceLogo.png"
-            alt="Makerspace logo"
-            width={1610}
-            height={741}
-            className="h-16 w-auto object-contain drop-shadow-lg"
-          />
-          <div>
-            <p className="text-white font-bold text-base leading-tight">Makerspace</p>
-            <p className="text-white/50 text-xs leading-tight">@ Suncoast</p>
-          </div>
-        </div>
-
-        {/* Train tracks — side-view rail profile */}
+        {/* Train tracks */}
         <svg
           className="absolute w-full pointer-events-none"
           style={{ bottom: "calc(8% + 8px)", height: "70px" }}
           xmlns="http://www.w3.org/2000/svg"
           preserveAspectRatio="none"
         >
-          {/* Far rail — thin hint at top, less opaque (depth cue) */}
-          <rect x="0" y={3} width="100%" height={3} fill="white" fillOpacity={0.25} rx={1} />
-
-          {/* Near rail I-beam profile */}
-          {/* Head — wide, main visible part */}
+          <rect x="0" y={3}  width="100%" height={3} fill="white" fillOpacity={0.25} rx={1} />
           <rect x="0" y={20} width="100%" height={8} fill="white" fillOpacity={0.88} rx={1} />
-          {/* Web — narrow middle section */}
           <rect x="0" y={28} width="100%" height={5} fill="white" fillOpacity={0.5} />
-          {/* Base flange — sits on sleepers */}
           <rect x="0" y={33} width="100%" height={4} fill="white" fillOpacity={0.7} rx={1} />
-
-          {/* Sleeper ends — stubs protruding below the rail base */}
           {Array.from({ length: 52 }, (_, i) => (
-            <rect
-              key={i}
-              x={`${i * 1.96}%`}
-              y={37}
-              width="0.85%"
-              height={16}
-              fill="white"
-              fillOpacity={0.22}
-              rx={1}
-            />
+            <rect key={i} x={`${i * 1.96}%`} y={37} width="0.85%" height={16} fill="white" fillOpacity={0.22} rx={1} />
           ))}
-
-          {/* Ground / ballast line */}
           <rect x="0" y={54} width="100%" height={2} fill="white" fillOpacity={0.12} />
         </svg>
 

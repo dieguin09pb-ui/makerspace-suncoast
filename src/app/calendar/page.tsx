@@ -2,6 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { QuarterCalendar } from "@/components/calendar/QuarterCalendar";
 import { QUARTERS, formatQuarterDateRange, getMeetingDates } from "@/lib/calendar-data";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -29,22 +30,25 @@ export default function CalendarPage() {
 
       {/* Quarter summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-6">
-        {QUARTERS.map((q) => {
+        {QUARTERS.map((q, i) => {
           const count = getMeetingDates(q).length;
           return (
-            <div key={q.id} className="bg-white rounded-lg border border-gray-100 shadow-sm p-3 text-center">
-              <p className="font-bold text-indigo-600 text-lg">{q.id}</p>
-              <p className="text-xs text-gray-500">{count} meetings</p>
-              <p className="text-xs text-gray-400 mt-1">
-                {q.start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} –{" "}
-                {q.end.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-              </p>
-            </div>
+            <ScrollReveal key={q.id} direction="up" delay={i * 80}>
+              <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-3 text-center">
+                <p className="font-bold text-indigo-600 text-lg">{q.id}</p>
+                <p className="text-xs text-gray-500">{count} meetings</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {q.start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} –{" "}
+                  {q.end.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </p>
+              </div>
+            </ScrollReveal>
           );
         })}
       </div>
 
       {/* Quarter tabs */}
+      <ScrollReveal direction="up" delay={100}>
       <Tabs defaultValue="Q1">
         <TabsList className="w-full sm:w-auto mb-6">
           {QUARTERS.map((q) => (
@@ -66,6 +70,7 @@ export default function CalendarPage() {
           </TabsContent>
         ))}
       </Tabs>
+      </ScrollReveal>
 
       <div className="mt-8 flex items-center gap-4 text-sm text-gray-500">
         <div className="flex items-center gap-2">
