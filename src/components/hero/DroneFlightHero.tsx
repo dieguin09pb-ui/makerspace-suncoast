@@ -18,6 +18,8 @@ function DroneViewer({ cameraOrbit = "30deg 75deg 2.5m" }: { cameraOrbit?: strin
       height: "240px",
       background: "transparent",
       "--poster-color": "transparent",
+      "--progress-bar-color": "transparent",
+      "--progress-bar-height": "0px",
       display: "block",
     } as React.CSSProperties,
   });
@@ -60,6 +62,7 @@ export function DroneFlightHero() {
 
     let gsapCtx: ReturnType<typeof import("gsap")["default"]["context"]> | undefined;
     let introRaf: number;
+    let unlockScroll = () => {};
 
     const init = async () => {
       const { default: gsap } = await import("gsap");
@@ -77,10 +80,10 @@ export function DroneFlightHero() {
       if (isMobile) {
         const mv1 = droneRef.current?.querySelector("model-viewer") as HTMLElement | null;
         const mv2 = drone2Ref.current?.querySelector("model-viewer") as HTMLElement | null;
-        if (mv1) { mv1.style.width = "160px"; mv1.style.height = "128px"; }
-        if (mv2) { mv2.style.width = "160px"; mv2.style.height = "128px"; }
+        if (mv1) { mv1.style.width = "200px"; mv1.style.height = "160px"; }
+        if (mv2) { mv2.style.width = "200px"; mv2.style.height = "160px"; }
         gsap.set([droneRef.current, drone2Ref.current], {
-          scale: 0.55,
+          scale: 0.75,
           transformOrigin: "center center",
         });
       }
@@ -197,33 +200,41 @@ export function DroneFlightHero() {
       revealOnLoad(droneRef);
       revealOnLoad(drone2Ref);
 
-      // ── Intro: auto-scroll for 2.5 s, then hand off to user ──────────
+      // ── Intro: lock scroll and auto-play the full animation over 2 s ──
       const container = containerRef.current;
       if (!container) return;
 
-      const scrollStart  = container.offsetTop;
-      const scrollRange  = container.offsetHeight - window.innerHeight;
-      const introTarget  = scrollStart + scrollRange * 0.30; // advance 30% through the hero
-      const INTRO_MS     = 2500;
-      const startTime    = performance.now();
-      let cancelled      = false;
+      const scrollStart = container.offsetTop;
+      const scrollRange = container.offsetHeight - window.innerHeight;
+      const INTRO_MS    = 2000;
+      const startTime   = performance.now();
 
-      const cancelIntro = () => { cancelled = true; };
-      window.addEventListener("wheel",      cancelIntro, { once: true, passive: true });
-      window.addEventListener("touchstart", cancelIntro, { once: true, passive: true });
-      window.addEventListener("keydown",    cancelIntro, { once: true });
+      // Prevent all user-initiated scrolling during the intro
+      const blockWheel   = (e: Event)       => e.preventDefault();
+      const blockTouch   = (e: Event)       => e.preventDefault();
+      const blockKeys    = (e: KeyboardEvent) => {
+        if (["ArrowDown","ArrowUp","Space","PageDown","PageUp","Home","End"].includes(e.key)) {
+          e.preventDefault();
+        }
+      };
+      window.addEventListener("wheel",     blockWheel, { passive: false });
+      window.addEventListener("touchmove", blockTouch, { passive: false });
+      window.addEventListener("keydown",   blockKeys);
+
+      unlockScroll = () => {
+        window.removeEventListener("wheel",     blockWheel);
+        window.removeEventListener("touchmove", blockTouch);
+        window.removeEventListener("keydown",   blockKeys);
+      };
 
       const scrollRAF = (now: number) => {
-        if (cancelled) return;
-        const t      = Math.min((now - startTime) / INTRO_MS, 1);
-        const eased  = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2; // easeInOutCubic
-        window.scrollTo(0, introTarget * eased);
+        const t     = Math.min((now - startTime) / INTRO_MS, 1);
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2; // easeInOutCubic
+        window.scrollTo(0, scrollStart + scrollRange * eased);
         if (t < 1) {
           introRaf = requestAnimationFrame(scrollRAF);
         } else {
-          window.removeEventListener("wheel",      cancelIntro);
-          window.removeEventListener("touchstart", cancelIntro);
-          window.removeEventListener("keydown",    cancelIntro);
+          unlockScroll();
         }
       };
       introRaf = requestAnimationFrame(scrollRAF);
@@ -233,6 +244,7 @@ export function DroneFlightHero() {
     return () => {
       gsapCtx?.revert();
       cancelAnimationFrame(introRaf);
+      unlockScroll();
     };
   }, []);
 
