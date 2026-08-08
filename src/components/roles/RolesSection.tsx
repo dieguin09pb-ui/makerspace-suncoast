@@ -1,7 +1,12 @@
+"use client";
+
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+
 const ROLES = [
   {
     title: "President",
     singular: true,
+    people: ["Abhi"],
     badge: "bg-indigo-100 text-indigo-800",
     border: "border-indigo-200",
     accent: "bg-indigo-600",
@@ -11,6 +16,7 @@ const ROLES = [
   {
     title: "Vice President",
     singular: false,
+    people: ["Advait", "Sonny"],
     badge: "bg-violet-100 text-violet-800",
     border: "border-violet-200",
     accent: "bg-violet-600",
@@ -20,6 +26,7 @@ const ROLES = [
   {
     title: "Project Lead",
     singular: true,
+    people: ["Diego"],
     badge: "bg-emerald-100 text-emerald-800",
     border: "border-emerald-200",
     accent: "bg-emerald-600",
@@ -29,6 +36,7 @@ const ROLES = [
   {
     title: "Competition Lead",
     singular: true,
+    people: ["Omar"],
     badge: "bg-amber-100 text-amber-800",
     border: "border-amber-200",
     accent: "bg-amber-500",
@@ -38,6 +46,7 @@ const ROLES = [
   {
     title: "PR & Ops Manager",
     singular: false,
+    people: ["Christian"],
     badge: "bg-purple-100 text-purple-800",
     border: "border-purple-200",
     accent: "bg-purple-600",
@@ -47,6 +56,7 @@ const ROLES = [
   {
     title: "Pit Crew",
     singular: false,
+    people: [],
     badge: "bg-slate-100 text-slate-700",
     border: "border-slate-200",
     accent: "bg-slate-500",
@@ -62,61 +72,80 @@ export function RolesSection({ hideHeader = false }: { hideHeader?: boolean }) {
     <section id="roles" className="bg-white py-10 px-4">
       <div className="mx-auto max-w-6xl">
         {!hideHeader && (
-          <div className="mb-10">
-            <span className="text-xs font-semibold tracking-widest uppercase text-indigo-500">
-              Organization
-            </span>
-            <h2 className="text-3xl font-black text-gray-900 mt-1">
-              Club Structure &amp; Roles
-            </h2>
-            <blockquote className="mt-4 max-w-2xl text-sm text-gray-500 leading-relaxed border-l-2 border-indigo-200 pl-4 italic">
-              {PREFACE}
-            </blockquote>
-          </div>
+          <ScrollReveal direction="place">
+            <div className="mb-10">
+              <span className="text-xs font-semibold tracking-widest uppercase text-indigo-500">
+                Organization
+              </span>
+              <h2 className="text-3xl font-black text-gray-900 mt-1">
+                Club Structure &amp; Roles
+              </h2>
+              <blockquote className="mt-4 max-w-2xl text-sm text-gray-500 leading-relaxed border-l-2 border-indigo-200 pl-4 italic">
+                {PREFACE}
+              </blockquote>
+            </div>
+          </ScrollReveal>
         )}
         {hideHeader && (
-          <blockquote className="mb-8 max-w-2xl text-sm text-gray-500 leading-relaxed border-l-2 border-indigo-200 pl-4 italic">
-            {PREFACE}
-          </blockquote>
+          <ScrollReveal direction="place">
+            <blockquote className="mb-8 max-w-2xl text-sm text-gray-500 leading-relaxed border-l-2 border-indigo-200 pl-4 italic">
+              {PREFACE}
+            </blockquote>
+          </ScrollReveal>
         )}
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {ROLES.map((role) => (
-            <div
-              key={role.title}
-              className={`rounded-2xl border ${role.border} bg-white shadow-sm p-6 flex flex-col gap-3 hover:shadow-md transition-shadow`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-bold text-gray-900 text-lg leading-tight">
-                  {role.title}
-                </h3>
-                <span
-                  className={`text-xs font-semibold rounded-full px-2.5 py-0.5 whitespace-nowrap flex-shrink-0 ${role.badge}`}
-                >
-                  {role.singular ? "Singular" : "Plural"}
-                </span>
+          {ROLES.map((role, i) => (
+            <ScrollReveal key={role.title} direction="place" delay={i * 80}>
+              <div
+                className={`rounded-2xl border ${role.border} bg-white shadow-sm p-6 flex flex-col gap-3 hover:shadow-md transition-shadow`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-bold text-gray-900 text-lg leading-tight">
+                    {role.title}
+                  </h3>
+                  <span
+                    className={`text-xs font-semibold rounded-full px-2.5 py-0.5 whitespace-nowrap flex-shrink-0 ${role.badge}`}
+                  >
+                    {role.singular ? "Singular" : "Plural"}
+                  </span>
+                </div>
+                <div className={`h-0.5 w-8 rounded-full ${role.accent}`} />
+                {role.people.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {role.people.map((name) => (
+                      <span
+                        key={name}
+                        className={`text-xs font-semibold rounded-full px-2.5 py-0.5 ${role.badge}`}
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <p className="text-sm text-gray-600 leading-relaxed flex-1">
+                  {role.summary}
+                </p>
               </div>
-              <div className={`h-0.5 w-8 rounded-full ${role.accent}`} />
-              <p className="text-sm text-gray-600 leading-relaxed flex-1">
-                {role.summary}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
-        <div className="mt-8 rounded-xl bg-indigo-50 border border-indigo-100 px-5 py-4">
-          <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest mb-1">
-            Credits
-          </p>
-          <p className="text-sm text-gray-700">
-            Organizational structure designed by{" "}
-            <span className="font-semibold">Adib Karim</span> and{" "}
-            <span className="font-semibold">Abhi</span>.
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            &ldquo;Trust-by-system is the motto, accountability by the system is the goal.&rdquo;
-          </p>
-        </div>
+        <ScrollReveal direction="place" className="mt-8">
+          <div className="rounded-xl bg-indigo-50 border border-indigo-100 px-5 py-4">
+            <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest mb-1">
+              Credits
+            </p>
+            <p className="text-sm text-gray-700">
+              Organizational structure designed by{" "}
+              <span className="font-semibold">Adib Karim</span> and{" "}
+              <span className="font-semibold">Abhi</span>.
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              &ldquo;Trust-by-system is the motto, accountability by the system is the goal.&rdquo;
+            </p>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

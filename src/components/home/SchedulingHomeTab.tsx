@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConflictForm } from "@/components/conflict/ConflictForm";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -29,54 +30,60 @@ export function HomeTabSection({ nextMeetings }: { nextMeetings: Meeting[] }) {
 
           {/* ── Calendar ── */}
           <TabsContent value="calendar">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Upcoming Meetings</h3>
-              {nextMeetings.length === 0 ? (
-                <p className="text-sm text-gray-400">No upcoming meetings found.</p>
-              ) : (
-                <div className="space-y-3">
-                  {nextMeetings.map((m) => (
-                    <div key={m.iso} className="flex items-center gap-3 rounded-lg border border-gray-100 bg-indigo-50/50 px-4 py-3">
-                      <span className="w-2 h-2 rounded-full bg-indigo-600 flex-shrink-0" />
-                      <span className="text-gray-700 font-medium text-sm">{m.label}</span>
-                      <span className="ml-auto text-xs text-indigo-600 bg-indigo-100 rounded-full px-2.5 py-0.5">After School</span>
-                    </div>
-                  ))}
+            <ScrollReveal direction="place">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 className="font-semibold text-gray-800 mb-4">Upcoming Meetings</h3>
+                {nextMeetings.length === 0 ? (
+                  <p className="text-sm text-gray-400">No upcoming meetings found.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {nextMeetings.map((m) => (
+                      <div key={m.iso} className="flex items-center gap-3 rounded-lg border border-gray-100 bg-indigo-50/50 px-4 py-3">
+                        <span className="w-2 h-2 rounded-full bg-indigo-600 flex-shrink-0" />
+                        <span className="text-gray-700 font-medium text-sm">{m.label}</span>
+                        <span className="ml-auto text-xs text-indigo-600 bg-indigo-100 rounded-full px-2.5 py-0.5">After School</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-5">
+                  <Link href="/calendar"><Button size="sm">View Full Calendar →</Button></Link>
                 </div>
-              )}
-              <div className="mt-5">
-                <Link href="/calendar"><Button size="sm">View Full Calendar →</Button></Link>
               </div>
-            </div>
+            </ScrollReveal>
           </TabsContent>
 
           {/* ── Org ── */}
           <TabsContent value="org">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <p className="text-sm text-gray-500 mb-4">
-                A lightweight matrix model — authority by decision type, not rank.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {ROLES_PREVIEW.map((r) => (
-                  <div key={r.title} className={`rounded-xl px-3 py-2.5 text-xs font-semibold ${r.color}`}>
-                    {r.title}
-                  </div>
-                ))}
+            <ScrollReveal direction="place">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <p className="text-sm text-gray-500 mb-4">
+                  A lightweight matrix model — authority by decision type, not rank.
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {ROLES_PREVIEW.map((r) => (
+                    <div key={r.title} className={`rounded-xl px-3 py-2.5 text-xs font-semibold ${r.color}`}>
+                      {r.title}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-5">
+                  <Link href="/org"><Button size="sm">View Full Org Chart →</Button></Link>
+                </div>
               </div>
-              <div className="mt-5">
-                <Link href="/org"><Button size="sm">View Full Org Chart →</Button></Link>
-              </div>
-            </div>
+            </ScrollReveal>
           </TabsContent>
 
           {/* ── Conflict ── */}
           <TabsContent value="conflict">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <p className="text-sm text-gray-500 mb-5">
-                We meet every <strong>Tuesday after school</strong>. Have a recurring activity? Submit it so leadership can plan around you.
-              </p>
-              <ConflictForm />
-            </div>
+            <ScrollReveal direction="place">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <p className="text-sm text-gray-500 mb-5">
+                  We meet every <strong>Tuesday after school</strong>. Have a recurring activity? Submit it so leadership can plan around you.
+                </p>
+                <ConflictForm />
+              </div>
+            </ScrollReveal>
           </TabsContent>
         </Tabs>
       </div>

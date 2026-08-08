@@ -17,6 +17,7 @@ import { RecurringChart } from "@/components/dashboard/RecurringChart";
 import { ConflictTable } from "@/components/dashboard/ConflictTable";
 import { ScheduleGrid } from "@/components/dashboard/ScheduleGrid";
 import { Button } from "@/components/ui/button";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -194,38 +195,47 @@ export function DashboardClient({ initialConflicts }: Props) {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-        <StatCard label="Total Conflicts" value={analytics.total} sub="submissions" />
-        <StatCard
-          label="Recurring"
-          value={analytics.recurringCount}
-          sub={
-            analytics.total > 0
-              ? `${Math.round((analytics.recurringCount / analytics.total) * 100)}% of total`
-              : "—"
-          }
-        />
-        <StatCard
-          label="Most Conflicted Day"
-          value={analytics.mostConflictedDay?.slice(0, 3) ?? "—"}
-          sub={
-            analytics.mostConflictedDay
-              ? `${analytics.byDay.find((d) => d.day === analytics.mostConflictedDay)?.count ?? 0} conflicts`
-              : "No data yet"
-          }
-        />
-        <StatCard
-          label="Most Affected Quarter"
-          value={analytics.mostConflictedQuarter ?? "—"}
-          sub={
-            analytics.mostConflictedQuarter
-              ? `${analytics.byQuarter.find((q) => q.quarter === analytics.mostConflictedQuarter)?.count ?? 0} conflicts`
-              : "No data yet"
-          }
-        />
+        <ScrollReveal direction="place" delay={0}>
+          <StatCard label="Total Conflicts" value={analytics.total} sub="submissions" />
+        </ScrollReveal>
+        <ScrollReveal direction="place" delay={60}>
+          <StatCard
+            label="Recurring"
+            value={analytics.recurringCount}
+            sub={
+              analytics.total > 0
+                ? `${Math.round((analytics.recurringCount / analytics.total) * 100)}% of total`
+                : "—"
+            }
+          />
+        </ScrollReveal>
+        <ScrollReveal direction="place" delay={120}>
+          <StatCard
+            label="Most Conflicted Day"
+            value={analytics.mostConflictedDay?.slice(0, 3) ?? "—"}
+            sub={
+              analytics.mostConflictedDay
+                ? `${analytics.byDay.find((d) => d.day === analytics.mostConflictedDay)?.count ?? 0} conflicts`
+                : "No data yet"
+            }
+          />
+        </ScrollReveal>
+        <ScrollReveal direction="place" delay={180}>
+          <StatCard
+            label="Most Affected Quarter"
+            value={analytics.mostConflictedQuarter ?? "—"}
+            sub={
+              analytics.mostConflictedQuarter
+                ? `${analytics.byQuarter.find((q) => q.quarter === analytics.mostConflictedQuarter)?.count ?? 0} conflicts`
+                : "No data yet"
+            }
+          />
+        </ScrollReveal>
       </div>
 
       {/* Schedule heatmap */}
-      <div className="mt-6 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <ScrollReveal direction="place" className="mt-6">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center gap-2 mb-1">
           <Image
             src="/images/StatGraphs.png"
@@ -248,87 +258,96 @@ export function DashboardClient({ initialConflicts }: Props) {
           <ScheduleGrid scheduleGrid={analytics.scheduleGrid} />
         )}
       </div>
+      </ScrollReveal>
 
       {/* Charts — 3 columns */}
       <div className="grid md:grid-cols-3 gap-5 mt-5">
-        <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-1">
-            <Image
-              src="/images/StatGraphs.png"
-              alt=""
-              width={24}
-              height={24}
-              className="object-contain"
-              aria-hidden="true"
-            />
-            <h2 className="font-semibold text-gray-700">Conflicts by Day of Week</h2>
-          </div>
-          <p className="text-xs text-gray-400 mb-3">Recurring conflicts only — each bar is color-coded by day</p>
-          {analytics.total === 0 ? (
-            <div className="h-64 flex items-center justify-center text-gray-400 text-sm">
-              No data yet — submit a conflict to see charts
+        <ScrollReveal direction="place" delay={100} className="md:col-span-2">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Image
+                src="/images/StatGraphs.png"
+                alt=""
+                width={24}
+                height={24}
+                className="object-contain"
+                aria-hidden="true"
+              />
+              <h2 className="font-semibold text-gray-700">Conflicts by Day of Week</h2>
             </div>
-          ) : (
-            <DayOfWeekChart data={analytics.byDay} />
-          )}
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-1">
-            <Image
-              src="/images/AnalyzeGraph.png"
-              alt=""
-              width={24}
-              height={24}
-              className="object-contain"
-              aria-hidden="true"
-            />
-            <h2 className="font-semibold text-gray-700">Recurring vs One-time</h2>
+            <p className="text-xs text-gray-400 mb-3">Recurring conflicts only — each bar is color-coded by day</p>
+            {analytics.total === 0 ? (
+              <div className="h-64 flex items-center justify-center text-gray-400 text-sm">
+                No data yet — submit a conflict to see charts
+              </div>
+            ) : (
+              <DayOfWeekChart data={analytics.byDay} />
+            )}
           </div>
-          <p className="text-xs text-gray-400 mb-1">Conflict type breakdown</p>
-          <RecurringChart
-            recurring={analytics.recurringCount}
-            total={analytics.total}
-          />
-        </div>
+        </ScrollReveal>
+        <ScrollReveal direction="place" delay={150}>
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Image
+                src="/images/AnalyzeGraph.png"
+                alt=""
+                width={24}
+                height={24}
+                className="object-contain"
+                aria-hidden="true"
+              />
+              <h2 className="font-semibold text-gray-700">Recurring vs One-time</h2>
+            </div>
+            <p className="text-xs text-gray-400 mb-1">Conflict type breakdown</p>
+            <RecurringChart
+              recurring={analytics.recurringCount}
+              total={analytics.total}
+            />
+          </div>
+        </ScrollReveal>
       </div>
 
       {/* Quarter pie chart */}
-      <div className="mt-5 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center gap-2 mb-1">
-          <Image
-            src="/images/Analytics.png"
-            alt=""
-            width={24}
-            height={24}
-            className="object-contain"
-            aria-hidden="true"
+      <ScrollReveal direction="place" className="mt-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <Image
+              src="/images/Analytics.png"
+              alt=""
+              width={24}
+              height={24}
+              className="object-contain"
+              aria-hidden="true"
+            />
+            <h2 className="font-semibold text-gray-700">Conflicts by Quarter</h2>
+          </div>
+          <p className="text-xs text-gray-400 mb-3">
+            Which quarters have the most scheduling conflicts
+          </p>
+          <QuarterChart
+            data={analytics.byQuarter}
+            selectedQuarters={selectedQuarters}
           />
-          <h2 className="font-semibold text-gray-700">Conflicts by Quarter</h2>
         </div>
-        <p className="text-xs text-gray-400 mb-3">
-          Which quarters have the most scheduling conflicts
-        </p>
-        <QuarterChart
-          data={analytics.byQuarter}
-          selectedQuarters={selectedQuarters}
-        />
-      </div>
+      </ScrollReveal>
 
       {/* Table */}
-      <div className="mt-8 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-700">All Submitted Conflicts</h2>
-          <div className="flex gap-2">
-            <Link href="/activities">
-              <Button variant="outline" size="sm">View all activities</Button>
-            </Link>
-            <Link href="/conflict">
-              <Button variant="outline" size="sm">Add a conflict</Button>
-            </Link>
+      <ScrollReveal direction="place" className="mt-8">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-gray-700">All Submitted Conflicts</h2>
+            <div className="flex gap-2">
+              <Link href="/activities">
+                <Button variant="outline" size="sm">View all activities</Button>
+              </Link>
+              <Link href="/conflict">
+                <Button variant="outline" size="sm">Add a conflict</Button>
+              </Link>
+            </div>
           </div>
+          <ConflictTable conflicts={filtered} />
         </div>
-        <ConflictTable conflicts={filtered} />
-      </div>
+      </ScrollReveal>
 
       <p className="text-xs text-gray-400 mt-4 text-center">
         Data refreshes on page load. Use the quarter filter to focus on a specific period.

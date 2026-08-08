@@ -183,7 +183,7 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="bg-gradient-to-r from-indigo-600 to-indigo-400 py-12 px-4 text-center text-white">
-        <div className="mx-auto max-w-xl">
+        <ScrollReveal direction="place" className="mx-auto max-w-xl">
           <Image
             src="/images/makerspaceLogo.png"
             alt="Makerspace logo"
@@ -203,7 +203,7 @@ export default function HomePage() {
               <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white/15">Get in Touch</Button>
             </Link>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
       {/* Credits */}
       <section className="bg-gray-950 py-4 px-4">
