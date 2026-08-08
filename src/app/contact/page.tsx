@@ -79,7 +79,14 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-700">Instagram</p>
-                <span className="text-xs text-gray-400 italic">Link coming soon — fill in</span>
+                <a
+                  href="https://www.instagram.com/shs.makerspaceclub"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-indigo-600 hover:underline"
+                >
+                  @shs.makerspaceclub
+                </a>
               </div>
             </div>
             <div className="flex items-center gap-3">
