@@ -1,6 +1,6 @@
 # Makerspace @ Suncoast
 
-Official website for the Makerspace STEM Club at Suncoast Community High School in Riviera Beach, Florida. Built to handle scheduling conflict tracking, project showcases, and member resources for the 2026–2027 school year.
+Official website for the Makerspace STEM Club at Suncoast Community High School in Riviera Beach, Florida. Built to handle meeting info, project showcases, and member resources for the 2026–2027 school year.
 
 **Live site:** https://makerspace-suncoast.vercel.app
 
@@ -11,8 +11,6 @@ Official website for the Makerspace STEM Club at Suncoast Community High School 
 | Route | Description |
 |---|---|
 | `/` | Home — drone flight hero, scheduling info, roles section, scroll-reveal animations |
-| `/conflict` | Scheduling conflict submission form |
-| `/activities` | Club activities listing |
 | `/progress` | 3D model viewer for printed parts + real project photos |
 | `/org` | Club org structure and team |
 | `/contact` | Contact information |
@@ -24,20 +22,17 @@ Official website for the Makerspace STEM Club at Suncoast Community High School 
 - **Next.js 16** (App Router, Turbopack) + TypeScript
 - **Tailwind CSS** with custom indigo theme
 - **Radix UI** primitives (hand-written components, no CLI)
-- **Recharts** for analytics charts
 - **Three.js + @google/model-viewer** for interactive 3D STL/GLB viewing
 - **GSAP** for hero animations
-- **react-hook-form + Zod** for conflict form validation
 - **OpenAI API** for the Abhi chatbot assistant
-- **Vercel Blob** for persistent conflict data storage
 - Deployed on **Vercel**
 
 ---
 
 ## Key Features
 
-### Scheduling Conflict Tracker
-Members submit scheduling conflicts via `/conflict`. Fields include name, days of week (multi-select), time slot (Before School / Lunch / After School), reason, recurring toggle, and quarters affected. Submissions are stored in Vercel Blob as JSON.
+### Meeting Schedule
+The club meets in **Room 3-126** every day during lunch, plus after school on Mondays and Fridays. The schedule is shown on the home page's Meetings tab and in the hero.
 
 ### Abhi Chatbot
 Floating chat widget (bottom-right) powered by OpenAI. Abhi answers questions about 3D printing, Arduino, electronics, competitions, and the club itself. Persists across all pages.
@@ -54,26 +49,7 @@ Every route change triggers a smooth 200ms fade-in via `app/template.tsx`.
 
 | Endpoint | Method | Description |
 |---|---|---|
-| `/api/conflicts` | GET | Fetch all conflict submissions |
-| `/api/conflicts` | POST | Submit a new conflict (writes to Vercel Blob) |
-| `/api/analytics` | GET | Aggregated stats by day, quarter, and recurrence |
 | `/api/chat` | POST | Streams OpenAI response as Abhi |
-
-### Conflict Data Model
-Stored in Vercel Blob at `makerspace/conflicts.json`:
-```ts
-{
-  id: string
-  submittedAt: string
-  name: string
-  daysOfWeek: string[]
-  timeStart: string
-  timeEnd: string
-  reason: string
-  isRecurring: boolean
-  quartersAffected: string[]
-}
-```
 
 ## Local Development
 
@@ -84,7 +60,6 @@ npm run dev
 
 Requires a `.env.local` with:
 ```
-BLOB_READ_WRITE_TOKEN=...
 OPENAI_API_KEY=...
 ```
 

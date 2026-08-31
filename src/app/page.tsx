@@ -1,25 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { QUARTERS, getMeetingDates } from "@/lib/calendar-data";
 import { DroneFlightHero } from "@/components/hero/DroneFlightHero";
 import { HomeTabSection } from "@/components/home/SchedulingHomeTab";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export default function HomePage() {
-  const nextMeetings = QUARTERS.flatMap((q) => getMeetingDates(q))
-    .filter((d) => d >= new Date())
-    .slice(0, 3)
-    .map((d) => ({
-      iso: d.toISOString(),
-      label: d.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
-    }));
-
   return (
     <div className="min-h-screen">
 
@@ -178,8 +164,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── tab section: Meetings / Org / Conflict ── */}
-      <HomeTabSection nextMeetings={nextMeetings} />
+      {/* ── tab section: Meetings / Org ── */}
+      <HomeTabSection />
 
       {/* ── CTA ── */}
       <section className="bg-gradient-to-r from-indigo-600 to-indigo-400 py-12 px-4 text-center text-white">
@@ -193,11 +179,11 @@ export default function HomePage() {
           />
           <h2 className="text-2xl font-black mb-2">Ready to Build Something?</h2>
           <p className="mb-6 opacity-90 text-sm">
-            A student-run makerspace at Suncoast Community High School — every Tuesday after school.
+            A student-run makerspace at Suncoast Community High School — lunch every day and after school Mondays and Fridays in Room 3-126.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/conflict">
-              <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50">Report a Conflict</Button>
+            <Link href="/progress">
+              <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50">See Our Work</Button>
             </Link>
             <Link href="/contact">
               <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white/15">Get in Touch</Button>

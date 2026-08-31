@@ -8,7 +8,7 @@ import { ChatWidget } from "@/components/chat/ChatWidget";
 export const metadata: Metadata = {
   title: "Makerspace @ Suncoast",
   description:
-    "STEM Club at Suncoast Community High School — scheduling and conflict management for the 2026-2027 school year.",
+    "STEM Club at Suncoast Community High School — meeting at lunch every day and after school Mondays and Fridays in Room 3-126.",
   icons: {
     icon: "/images/makerspaceLogoSimplified.png",
     apple: "/images/makerspaceLogoSimplified.png",

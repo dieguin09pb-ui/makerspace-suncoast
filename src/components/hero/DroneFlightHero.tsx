@@ -262,7 +262,7 @@ function TextSlot({ slot }: { slot: Slot }) {
             Active Members
           </p>
           <p className={`text-white/30 mt-2 ${xl ? "text-sm" : "text-[10px]"}`}>
-            Every Tuesday · Room 2104
+            Lunch daily · Room 3-126
           </p>
         </div>
       );
@@ -273,9 +273,9 @@ function TextSlot({ slot }: { slot: Slot }) {
           <p className={`text-indigo-300 font-semibold uppercase tracking-widest mb-2 ${xl ? "text-sm" : "text-[9px]"}`}>
             Find us at
           </p>
-          <p className={`font-black text-white ${xl ? "text-7xl" : "text-xl"}`}>Room 2104</p>
+          <p className={`font-black text-white ${xl ? "text-7xl" : "text-xl"}`}>Room 3-126</p>
           <p className={`text-white/60 mt-3 ${xl ? "text-lg" : "text-xs"}`}>
-            After school, every Tuesday
+            Lunch daily · After school Mon & Fri
           </p>
         </div>
       );
@@ -298,13 +298,13 @@ function TextSlot({ slot }: { slot: Slot }) {
       inner = (
         <div style={{ textShadow: "0 2px 20px rgba(0,0,0,0.9)" }}>
           <p className={`text-indigo-400 font-semibold uppercase tracking-widest mb-3 ${xl ? "text-sm" : "text-[9px]"}`}>
-            Next meeting
+            When we meet
           </p>
           <p className={`font-black text-white leading-none ${xl ? "text-8xl" : "text-2xl"}`}>
-            TUESDAY
+            EVERY DAY
           </p>
           <p className={`text-indigo-300/80 mt-3 font-medium ${xl ? "text-xl" : "text-xs"}`}>
-            After school · Room 2104
+            Lunch, plus after school Mon &amp; Fri · Room 3-126
           </p>
           <div className={`mt-4 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full ${xl ? "h-0.5 w-20" : "h-px w-8"}`} />
         </div>

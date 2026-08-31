@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
@@ -24,7 +24,7 @@ export function Footer() {
 
           <nav className="flex flex-wrap gap-4 text-sm text-gray-500">
             <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-            <Link href="/conflict" className="hover:text-indigo-600 transition-colors">Conflict</Link>
+            <Link href="/progress" className="hover:text-indigo-600 transition-colors">Progress</Link>
             <Link href="/org" className="hover:text-indigo-600 transition-colors">Org</Link>
             <Link href="/contact" className="hover:text-indigo-600 transition-colors">Contact</Link>
           </nav>

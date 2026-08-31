@@ -15,7 +15,7 @@ export default function ProgressPage() {
           <span className="text-xs font-semibold tracking-widest uppercase text-indigo-500">What We&apos;ve Built</span>
           <h1 className="text-4xl font-black text-gray-900 mt-1 mb-2">Member Progress</h1>
           <p className="text-gray-500 text-sm mb-10 max-w-xl">
-            Real work from our members — from digital file to finished product. Every project here started as an idea at a Tuesday meeting.
+            Real work from our members — from digital file to finished product. Every project here started as an idea at a lunch meeting.
           </p>
         </ScrollReveal>
 
