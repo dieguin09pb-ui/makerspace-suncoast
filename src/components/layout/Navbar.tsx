@@ -9,12 +9,10 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/calendar", label: "Calendar" },
   { href: "/progress", label: "Progress" },
   { href: "/conflict", label: "Report Conflict" },
   { href: "/org", label: "Org" },
   { href: "/contact", label: "Contact" },
-  { href: "/dashboard", label: "Dashboard" },
 ];
 
 export function Navbar() {

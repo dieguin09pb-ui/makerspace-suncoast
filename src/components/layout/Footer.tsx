@@ -24,11 +24,9 @@ export function Footer() {
 
           <nav className="flex flex-wrap gap-4 text-sm text-gray-500">
             <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-            <Link href="/calendar" className="hover:text-indigo-600 transition-colors">Calendar</Link>
             <Link href="/conflict" className="hover:text-indigo-600 transition-colors">Conflict</Link>
             <Link href="/org" className="hover:text-indigo-600 transition-colors">Org</Link>
             <Link href="/contact" className="hover:text-indigo-600 transition-colors">Contact</Link>
-            <Link href="/dashboard" className="hover:text-indigo-600 transition-colors">Dashboard</Link>
           </nav>
         </div>
         <div className="mt-6 text-center text-xs text-gray-400">

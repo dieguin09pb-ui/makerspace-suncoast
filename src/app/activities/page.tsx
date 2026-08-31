@@ -62,9 +62,6 @@ export default async function ActivitiesPage() {
         <Link href="/conflict">
           <Button size="sm">Report a Conflict</Button>
         </Link>
-        <Link href="/dashboard">
-          <Button size="sm" variant="outline">View Dashboard</Button>
-        </Link>
       </div>
 
       {conflicts.length === 0 ? (

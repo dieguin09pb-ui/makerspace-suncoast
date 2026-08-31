@@ -33,7 +33,7 @@ export default function ConflictPage() {
           Makerspace meets every <strong>Tuesday after school</strong>. If you
           have a recurring activity — sports, music, academic program — please
           fill out this form so the club leadership can plan meetings that
-          maximize attendance. Your data will appear on the dashboard to help
+          maximize attendance. Your submission will be reviewed by leadership to help
           us find the best schedule for every quarter.
         </p>
         <p className="text-sm text-gray-500 mt-2">

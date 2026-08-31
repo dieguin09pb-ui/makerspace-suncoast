@@ -21,15 +21,15 @@ export function HomeTabSection({ nextMeetings }: { nextMeetings: Meeting[] }) {
   return (
     <section id="schedule" className="bg-indigo-50 py-16 px-4">
       <div className="mx-auto max-w-3xl">
-        <Tabs defaultValue="calendar">
+        <Tabs defaultValue="meetings">
           <TabsList className="w-full mb-6">
-            <TabsTrigger value="calendar" className="flex-1">Calendar</TabsTrigger>
+            <TabsTrigger value="meetings" className="flex-1">Meetings</TabsTrigger>
             <TabsTrigger value="org"      className="flex-1">Org</TabsTrigger>
             <TabsTrigger value="conflict" className="flex-1">Conflict</TabsTrigger>
           </TabsList>
 
-          {/* ── Calendar ── */}
-          <TabsContent value="calendar">
+          {/* ── Meetings ── */}
+          <TabsContent value="meetings">
             <ScrollReveal direction="place">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h3 className="font-semibold text-gray-800 mb-4">Upcoming Meetings</h3>
@@ -46,9 +46,6 @@ export function HomeTabSection({ nextMeetings }: { nextMeetings: Meeting[] }) {
                     ))}
                   </div>
                 )}
-                <div className="mt-5">
-                  <Link href="/calendar"><Button size="sm">View Full Calendar →</Button></Link>
-                </div>
               </div>
             </ScrollReveal>
           </TabsContent>

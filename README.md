@@ -1,6 +1,6 @@
 # Makerspace @ Suncoast
 
-Official website for the Makerspace STEM Club at Suncoast Community High School in Riviera Beach, Florida. Built to handle scheduling conflict tracking, meeting calendars, project showcases, and member resources for the 2026–2027 school year.
+Official website for the Makerspace STEM Club at Suncoast Community High School in Riviera Beach, Florida. Built to handle scheduling conflict tracking, project showcases, and member resources for the 2026–2027 school year.
 
 **Live site:** https://makerspace-suncoast.vercel.app
 
@@ -11,9 +11,7 @@ Official website for the Makerspace STEM Club at Suncoast Community High School 
 | Route | Description |
 |---|---|
 | `/` | Home — drone flight hero, scheduling info, roles section, scroll-reveal animations |
-| `/calendar` | Q1–Q4 meeting calendar with Tuesdays highlighted per quarter |
 | `/conflict` | Scheduling conflict submission form |
-| `/dashboard` | Analytics dashboard — charts, filters, and conflict table |
 | `/activities` | Club activities listing |
 | `/progress` | 3D model viewer for printed parts + real project photos |
 | `/org` | Club org structure and team |
@@ -41,22 +39,11 @@ Official website for the Makerspace STEM Club at Suncoast Community High School 
 ### Scheduling Conflict Tracker
 Members submit scheduling conflicts via `/conflict`. Fields include name, days of week (multi-select), time slot (Before School / Lunch / After School), reason, recurring toggle, and quarters affected. Submissions are stored in Vercel Blob as JSON.
 
-### Analytics Dashboard
-`/dashboard` aggregates all conflict submissions into:
-- Bar chart by day of week
-- Bar chart by quarter (Q1–Q4)
-- Recurring vs. one-time breakdown chart
-- Schedule grid heat map
-- Filterable and sortable conflict table
-
 ### Abhi Chatbot
 Floating chat widget (bottom-right) powered by OpenAI. Abhi answers questions about 3D printing, Arduino, electronics, competitions, and the club itself. Persists across all pages.
 
 ### 3D Progress Viewer
 `/progress` renders interactive STL models (drone chassis, greenhouse, belt holder) and GLB files (flying drone, train) using `@google/model-viewer` and Three.js, alongside real photos of finished builds.
-
-### Meeting endar
-`/endar` shows Q1–Q4 tabs with every Tuesday highlighted as a meeting day, aligned to the 2026–2027 Palm Beach County School District endar.
 
 ### Page Transitions
 Every route change triggers a smooth 200ms fade-in via `app/template.tsx`.

@@ -178,7 +178,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 3-tab section: Conflict / Calendar / Org ── */}
+      {/* ── tab section: Meetings / Org / Conflict ── */}
       <HomeTabSection nextMeetings={nextMeetings} />
 
       {/* ── CTA ── */}
@@ -196,8 +196,8 @@ export default function HomePage() {
             A student-run makerspace at Suncoast Community High School — every Tuesday after school.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/calendar">
-              <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50">View Calendar</Button>
+            <Link href="/conflict">
+              <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50">Report a Conflict</Button>
             </Link>
             <Link href="/contact">
               <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white/15">Get in Touch</Button>
