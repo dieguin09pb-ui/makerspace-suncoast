@@ -378,28 +378,57 @@ export function DroneFlightHero() {
 
   useEffect(() => {
     import("@google/model-viewer");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let gsapCtx: any;
-    const tids: ReturnType<typeof setTimeout>[] = [];
-    const delay = (fn: () => void, ms: number) => {
-      const id = setTimeout(fn, ms);
-      tids.push(id);
-    };
 
-    const init = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { default: gsap } = (await import("gsap")) as any;
-      const { MotionPathPlugin } = await import("gsap/MotionPathPlugin");
-      gsap.registerPlugin(MotionPathPlugin);
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    let gsap: any = null;
+    let gsapCtx: any = null;
+    let master: any = null;       // train + drone choreography (one rAF clock)
+    let ambientCall: any = null;  // handle for the next ambient swap
+    let swapCall: any = null;     // handle for the desktop fade-out then fade-in handoff
+    /* eslint-enable @typescript-eslint/no-explicit-any */
 
+    let disposed = false;
+    let introDone = false;
+    let resizeTid: ReturnType<typeof setTimeout> | null = null;
+
+    // Geometry is re-measured on resize instead of being captured once at mount.
+    let cw = 0, ch = 0, lastW = 0, lastH = 0;
+    let isDesktop = false, isMobile = false;
+
+    function measure(): boolean {
       const el = containerRef.current;
-      if (!el) return;
-      const cw = el.offsetWidth;
-      const ch = el.offsetHeight;
+      if (!el) return false;
+      cw = el.offsetWidth;
+      ch = el.offsetHeight;
+      lastW = cw;
+      lastH = ch;
+      isDesktop = cw >= 1024;
+      isMobile = cw < 768;
+      isMobileRef.current = isMobile;
       svgRef.current?.setAttribute("viewBox", `0 0 ${cw} ${ch}`);
+      return true;
+    }
 
-      // Responsive card positions — xlarge on desktop, medium on smaller screens
-      const isDesktop = cw >= 1024;
+    const make = (
+      pos: { xPct: number; yPct: number; size: Size },
+      item: CycleItem
+    ): Slot => ({
+      id:         ++_nextSlotId,
+      cx:         (pos.xPct / 100) * cw,
+      cy:         (pos.yPct / 100) * ch,
+      size:       pos.size,
+      kind:       item.kind,
+      contentIdx: item.contentIdx,
+      visible:    false,
+    });
+
+    // `instant` skips the fade - used when re-laying out after a resize, where
+    // the content is already on screen and only its coordinates changed.
+    function showCycle(idx: number, instant = false) {
+      const cycle = CYCLES[idx];
+      const stacked = cycle.layout === "stacked" && isDesktop && !!cycle.c;
+
+      // Responsive card positions - xlarge on desktop, medium on smaller screens
       const POS_A = isDesktop
         ? { xPct: 26, yPct: 30, size: "xlarge" as Size }
         : { xPct: 33, yPct: 42, size: "medium" as Size };
@@ -407,177 +436,279 @@ export function DroneFlightHero() {
         ? { xPct: 74, yPct: 30, size: "xlarge" as Size }
         : { xPct: 67, yPct: 42, size: "medium" as Size };
 
-      const isMobile = cw < 768;
-      isMobileRef.current = isMobile;
+      // Mobile: single centered image card only (headline is a fixed JSX element)
+      if (isMobile) {
+        const imgItem = cycle.layout === "stacked"
+          ? cycle.c!
+          : (cycle.a.kind === "image" ? cycle.a : cycle.b);
+        // Mobile tracks sit at bottom:calc(26%+5px) -> rail from top = 0.74*ch - 55
+        const mobileRailTopPx = 0.74 * ch - 55;
+        // Headline top is at 10% with ~185px text height
+        const headlineBot = 0.10 * ch + 185;
+        const available = mobileRailTopPx - 16 - (headlineBot + 16);
+        const mobileSize: Size = available >= 200 ? "large" : available >= 150 ? "medium" : "small";
+        const mobileImgCy = headlineBot + 16 + DIMS[mobileSize].h / 2;
 
-      // make() must be defined before showCycle so it's available to all branches
-      const make = (
-        pos: { xPct: number; yPct: number; size: Size },
-        item: CycleItem
-      ): Slot => ({
-        id:         ++_nextSlotId,
-        cx:         (pos.xPct / 100) * cw,
-        cy:         (pos.yPct / 100) * ch,
-        size:       pos.size,
-        kind:       item.kind,
-        contentIdx: item.contentIdx,
-        visible:    false,
+        // flushSync commits the DOM synchronously so querySelectorAll finds the new element.
+        // GSAP then owns opacity directly (no CSS transition), which is reliable on mobile.
+        flushSync(() => {
+          setSlots(() => [make({ xPct: 50, yPct: (mobileImgCy / ch) * 100, size: mobileSize }, imgItem)]);
+        });
+        const newEls = Array.from(containerRef.current?.querySelectorAll("[data-slot-id]") ?? []);
+        if (instant) {
+          gsap?.set(newEls, { opacity: 1 });
+          return;
+        }
+        gsap?.set(newEls, { opacity: 0 });
+        requestAnimationFrame(() => {
+          if (!disposed) gsap?.to(newEls, { opacity: 1, duration: 0.9, ease: "sine.inOut" });
+        });
+        return;
+      }
+
+      // Track rails top = 0.83*ch - 75 + 20 = 0.83ch - 55 from viewport top.
+      // "stack" size (430x240, half=120): dynamic positioning keeps both cards above rail.
+
+      if (stacked) {
+        // "stack" = 430px wide (same as xlarge), 220px tall (half=110).
+        // At 720px: upper bottom=268px, lower bottom=520px - both clear of 523px rail top.
+        // At 1080px: even more room. Dynamic yPct keeps them clear at any height.
+        const halfStack = DIMS["stack"].h / 2;          // 110
+        const railTopPx = 0.83 * ch - 55;               // main rail from viewport top
+        const upperCy   = Math.max(halfStack + 8, ch * 0.22);
+        const lowerCy   = Math.min(railTopPx - halfStack - 12,
+                            Math.max(upperCy + DIMS["stack"].h + 18, ch * 0.57));
+        setSlots(() => [
+          make({ xPct: 26, yPct: (upperCy / ch) * 100, size: "stack" }, cycle.a),
+          make({ xPct: 26, yPct: (lowerCy / ch) * 100, size: "stack" }, cycle.b),
+          make({ xPct: 74, yPct: 30, size: "xlarge" }, cycle.c!),
+        ]);
+      } else {
+        setSlots(() => [make(POS_A, cycle.a), make(POS_B, cycle.b)]);
+      }
+
+      if (instant) {
+        setSlots((p) => p.map((s) => ({ ...s, visible: true })));
+        return;
+      }
+      swapCall = gsap?.delayedCall(0.08, () =>
+        setSlots((p) => p.map((s) => ({ ...s, visible: true })))
+      );
+    }
+
+    function hideThenShow(nextIdx: number) {
+      if (isMobile) {
+        // GSAP fades out existing slot, then swaps in the next one via onComplete.
+        const currentEls = Array.from(containerRef.current?.querySelectorAll("[data-slot-id]") ?? []);
+        if (currentEls.length) {
+          gsap?.to(currentEls, { opacity: 0, duration: 0.7, ease: "sine.inOut", onComplete: () => showCycle(nextIdx) });
+        } else {
+          showCycle(nextIdx);
+        }
+        return;
+      }
+      setSlots((p) => p.map((s) => ({ ...s, visible: false })));
+      // gsap.delayedCall rides the same rAF clock as everything else, so a
+      // backgrounded tab freezes this handoff instead of firing it blind.
+      swapCall = gsap?.delayedCall(0.7, () => showCycle(nextIdx));
+    }
+
+    function scheduleNext() {
+      ambientCall?.kill();
+      ambientCall = gsap?.delayedCall(5, () => {
+        cycleIdxRef.current = (cycleIdxRef.current + 1) % CYCLES.length;
+        hideThenShow(cycleIdxRef.current);
+        scheduleNext();
+      });
+    }
+
+    // Content is chained to the END of the flight rather than to a fixed 7.2s
+    // wall-clock timeout. That is the invariant the old code assumed but could
+    // not guarantee: no card can appear while a drone or the train is still on
+    // screen, no matter how long the tab was hidden or how slow the models load.
+    function startAmbient() {
+      if (disposed || introDone) return;
+      introDone = true;
+
+      // Mobile: fade in the permanent headline once and leave it visible
+      if (isMobile && mobileHeadlineRef.current) {
+        gsap?.to(mobileHeadlineRef.current, { opacity: 1, duration: 0.8 });
+      }
+
+      cycleIdxRef.current = 0;
+      showCycle(0);
+      scheduleNext();
+    }
+
+    function buildIntro() {
+      // Train starts off-screen right - 2x smaller on mobile, shifted up to align with raised tracks.
+      // Formula: y = -(0.13*ch + 14) places the model's rail exactly on the SVG rail at bottom:calc(26%+5px).
+      gsap.set(trainRef.current, {
+        x: cw + 50,
+        y: isMobile ? -(0.13 * ch + 14) : 0,
+        scale: isMobile ? 0.5 : 1,
+        transformOrigin: "0% 100%",
       });
 
-      function showCycle(idx: number) {
-        const cycle = CYCLES[idx];
-        const stacked = cycle.layout === "stacked" && isDesktop && !!cycle.c;
+      master = gsap.timeline({ paused: true, onComplete: startAmbient });
 
-        // Mobile: single centered image card only (headline is a fixed JSX element)
-        if (isMobile) {
-          const imgItem = cycle.layout === "stacked"
-            ? cycle.c!
-            : (cycle.a.kind === "image" ? cycle.a : cycle.b);
-          // Mobile tracks sit at bottom:calc(26%+5px) → rail from top = 0.74*ch - 55
-          const mobileRailTopPx = 0.74 * ch - 55;
-          // Headline top is at 10% with ~185px text height
-          const headlineBot = 0.10 * ch + 185;
-          const available = mobileRailTopPx - 16 - (headlineBot + 16);
-          const mobileSize: Size = available >= 200 ? "large" : available >= 150 ? "medium" : "small";
-          const mobileImgCy = headlineBot + 16 + DIMS[mobileSize].h / 2;
+      // Train: single dramatic crossing (desktop t=1.5s, mobile t=2s, 5s long)
+      const tTrain = isMobile ? 2 : 1.5;
+      master
+        .to(trainRef.current, { opacity: 1, duration: 0.5 }, tTrain)
+        .to(trainRef.current, { x: isMobile ? -560 : -1120, duration: 5, ease: "power1.inOut" }, tTrain)
+        .to(trainRef.current, { opacity: 0, duration: 0.5 }, tTrain + 4.9);
 
-          // flushSync commits the DOM synchronously so querySelectorAll finds the new element.
-          // GSAP then owns opacity directly (no CSS transition), which is reliable on mobile.
-          flushSync(() => {
-            setSlots(() => [make({ xPct: 50, yPct: (mobileImgCy / ch) * 100, size: mobileSize }, imgItem)]);
-          });
-          const newEls = Array.from(containerRef.current?.querySelectorAll("[data-slot-id]") ?? []);
-          gsap.set(newEls, { opacity: 0 });
-          requestAnimationFrame(() => {
-            gsap.to(newEls, { opacity: 1, duration: 0.9, ease: "sine.inOut" });
-          });
-          return;
-        }
+      // Drones: launch simultaneously (t=0.8s, 4.5s each).
+      // A (ltr, top lane) and B (rtl, mid lane) are in separate y corridors.
+      if (!isMobile) {
+        pathARef.current?.setAttribute("d", buildDronePathA(cw, ch));
+        pathBRef.current?.setAttribute("d", buildDronePathB(cw, ch));
 
-        // Track rails top = 0.83*ch - 75 + 20 = 0.83ch - 55 from viewport top.
-        // "stack" size (430×240, half=120): dynamic positioning keeps both cards above rail.
+        master
+          .set(droneARef.current, { opacity: 0 }, 0.8)
+          .to(droneARef.current, { opacity: 1, duration: 0.5 }, 0.8)
+          .to(droneARef.current, {
+            motionPath: {
+              path: pathARef.current!, align: pathARef.current!,
+              autoRotate: true, alignOrigin: [0.5, 0.5],
+            },
+            duration: 4.5,
+            ease: "power1.inOut",
+          }, 0.8)
+          .to(droneARef.current, { opacity: 0, duration: 0.4 }, 0.8 + 4.6)
 
-        if (stacked) {
-          // "stack" = 430px wide (same as xlarge), 220px tall (half=110).
-          // At 720px: upper bottom=268px, lower bottom=520px — both clear of 523px rail top ✓.
-          // At 1080px: even more room. Dynamic yPct keeps them clear at any height.
-          const halfStack = DIMS["stack"].h / 2;          // 110
-          const railTopPx = 0.83 * ch - 55;               // main rail from viewport top
-          const upperCy   = Math.max(halfStack + 8, ch * 0.22);
-          const lowerCy   = Math.min(railTopPx - halfStack - 12,
-                              Math.max(upperCy + DIMS["stack"].h + 18, ch * 0.57));
-          setSlots(() => [
-            make({ xPct: 26, yPct: (upperCy / ch) * 100, size: "stack" }, cycle.a),
-            make({ xPct: 26, yPct: (lowerCy / ch) * 100, size: "stack" }, cycle.b),
-            make({ xPct: 74, yPct: 30, size: "xlarge" }, cycle.c!),
-          ]);
-        } else {
-          setSlots(() => [make(POS_A, cycle.a), make(POS_B, cycle.b)]);
-        }
-        delay(() => setSlots((p) => p.map((s) => ({ ...s, visible: true }))), 80);
+          .set(droneBRef.current, { opacity: 0 }, 0.8)
+          .to(droneBRef.current, { opacity: 1, duration: 0.5 }, 0.8)
+          .to(droneBRef.current, {
+            motionPath: {
+              path: pathBRef.current!, align: pathBRef.current!,
+              autoRotate: false, alignOrigin: [0.5, 0.5],
+            },
+            duration: 4.5,
+            ease: "power1.inOut",
+          }, 0.8)
+          .to(droneBRef.current, { opacity: 0, duration: 0.4 }, 0.8 + 4.6);
       }
+    }
 
-      function hideThenShow(nextIdx: number) {
-        if (isMobile) {
-          // GSAP fades out existing slot, then swaps in the next one via onComplete.
-          const currentEls = Array.from(containerRef.current?.querySelectorAll("[data-slot-id]") ?? []);
-          if (currentEls.length) {
-            gsap.to(currentEls, { opacity: 0, duration: 0.7, ease: "sine.inOut", onComplete: () => showCycle(nextIdx) });
-          } else {
-            showCycle(nextIdx);
-          }
-          return;
-        }
-        // Desktop (unchanged):
-        setSlots((p) => p.map((s) => ({ ...s, visible: false })));
-        delay(() => showCycle(nextIdx), 700);
+    // The GLB models are large; on a slow connection they are still downloading
+    // while the flight is scheduled to run. Hold the flight until they are ready
+    // (capped, so a stalled download never leaves the hero frozen).
+    function whenModelsReady(): Promise<void> {
+      return new Promise<void>((resolve) => {
+        const viewers = Array.from(
+          containerRef.current?.querySelectorAll("model-viewer") ?? []
+        );
+        if (!viewers.length) return resolve();
+
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(cap);
+          resolve();
+        };
+        const cap = setTimeout(finish, 6000);
+
+        let left = viewers.length;
+        const tick = () => { if (--left <= 0) finish(); };
+        viewers.forEach((v) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((v as any).loaded) return tick();
+          const on = () => { v.removeEventListener("load", on); tick(); };
+          v.addEventListener("load", on);
+        });
+      });
+    }
+
+    // Resize / orientation change / window snapped to half the screen: every
+    // slot coordinate, drone path and breakpoint above is computed from the
+    // container size, so all of it has to be rebuilt rather than left stale.
+    function relayout() {
+      if (disposed || !measure()) return;
+      swapCall?.kill();  swapCall = null;
+      ambientCall?.kill(); ambientCall = null;
+
+      if (!introDone) {
+        // Don't replay the intro at the new size - finish it and settle.
+        if (master) master.progress(1);
+        else startAmbient();
+        return;
       }
+      showCycle(cycleIdxRef.current, true);
+      scheduleNext();
+    }
+
+    const onResize = () => {
+      if (resizeTid) clearTimeout(resizeTid);
+      resizeTid = setTimeout(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        // Ignore the small height-only jitter mobile browsers emit when the
+        // URL bar shows or hides; react to any real width change.
+        if (el.offsetWidth === lastW && Math.abs(el.offsetHeight - lastH) < 120) return;
+        relayout();
+      }, 250);
+    };
+
+    // rAF stops in a hidden tab but timers do not, which is what let the flight
+    // and the content run against each other after the machine slept. Pausing
+    // explicitly keeps the whole sequence on one clock.
+    const onVisibility = () => {
+      if (document.hidden) {
+        master?.pause();
+        ambientCall?.pause();
+        swapCall?.pause();
+        return;
+      }
+      master?.resume();
+      ambientCall?.resume();
+      swapCall?.resume();
+      const el = containerRef.current;
+      if (el && (el.offsetWidth !== lastW || Math.abs(el.offsetHeight - lastH) >= 120)) {
+        relayout();
+      }
+    };
+
+    const init = async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { default: g } = (await import("gsap")) as any;
+      const { MotionPathPlugin } = await import("gsap/MotionPathPlugin");
+      g.registerPlugin(MotionPathPlugin);
+      gsap = g;
+      if (disposed || !measure()) return;
 
       gsapCtx = gsap.context(() => {
-
-        // Train starts off-screen right — 2x smaller on mobile, shifted up to align with raised tracks.
-        // Formula: y = -(0.13*ch + 14) places the model's rail exactly on the SVG rail at bottom:calc(26%+5px).
-        gsap.set(trainRef.current, {
-          x: cw + 50,
-          y: isMobile ? -(0.13 * ch + 14) : 0,
-          scale: isMobile ? 0.5 : 1,
-          transformOrigin: "0% 100%",
-        });
-
-        // ── Cinematic fade-in from black (t=0) ────────────────────────────
+        // The black overlay clears immediately so a slow model download never
+        // holds the page on a blank screen.
         gsap.to(introRef.current, { opacity: 0, duration: 0.9, ease: "power2.out" });
-
-        // ── Train: single dramatic crossing (desktop t=1500ms, mobile t=2000ms, 5s) ──
-        delay(() => {
-          gsap.timeline()
-            .to(trainRef.current, { opacity: 1, duration: 0.5 }, 0)
-            .to(trainRef.current, { x: isMobile ? -560 : -1120, duration: 5, ease: "power1.inOut" }, 0)
-            .to(trainRef.current, { opacity: 0, duration: 0.5 }, ">-0.6");
-        }, isMobile ? 2000 : 1500);
-
-        // ── Drones: launch simultaneously (t=800ms, 4.5s each) ───────────
-        // A (ltr, top lane) and B (rtl, mid lane) are in separate y corridors.
-        // No content exists during this window → zero overlap possible.
-        delay(() => {
-          if (window.innerWidth < 768) return;
-
-          const pathA = buildDronePathA(cw, ch);
-          pathARef.current?.setAttribute("d", pathA);
-          gsap.timeline()
-            .set(droneARef.current, { opacity: 0 })
-            .to(droneARef.current, { opacity: 1, duration: 0.5 }, 0)
-            .to(droneARef.current, {
-              motionPath: {
-                path: pathARef.current!, align: pathARef.current!,
-                autoRotate: true, alignOrigin: [0.5, 0.5],
-              },
-              duration: 4.5,
-              ease: "power1.inOut",
-            }, 0)
-            .to(droneARef.current, { opacity: 0, duration: 0.4 }, ">-0.5");
-
-          const pathB = buildDronePathB(cw, ch);
-          pathBRef.current?.setAttribute("d", pathB);
-          gsap.timeline()
-            .set(droneBRef.current, { opacity: 0 })
-            .to(droneBRef.current, { opacity: 1, duration: 0.5 }, 0)
-            .to(droneBRef.current, {
-              motionPath: {
-                path: pathBRef.current!, align: pathBRef.current!,
-                autoRotate: false, alignOrigin: [0.5, 0.5],
-              },
-              duration: 4.5,
-              ease: "power1.inOut",
-            }, 0)
-            .to(droneBRef.current, { opacity: 0, duration: 0.4 }, ">-0.5");
-        }, 800);
-
-        // ── Ambient loop: content appears after intro ends (~t=7.2s) ─────
-        // Train exits ~6.9s (1500ms start + 5s + 0.4s fade), drones exit ~5.3s.
-        delay(() => {
-          // Mobile: fade in the permanent headline once and leave it visible
-          if (isMobile && mobileHeadlineRef.current) {
-            gsap.to(mobileHeadlineRef.current, { opacity: 1, duration: 0.8 });
-          }
-
-          cycleIdxRef.current = 0;
-          showCycle(0);
-
-          ambientRef.current = setInterval(() => {
-            cycleIdxRef.current = (cycleIdxRef.current + 1) % CYCLES.length;
-            hideThenShow(cycleIdxRef.current);
-          }, 5000);
-        }, 7200);
-
+        buildIntro();
       }, containerRef);
+
+      await whenModelsReady();
+      if (disposed) return;
+      if (document.hidden) {
+        // Started while backgrounded - settle straight into the content.
+        master.progress(1);
+      } else {
+        master.play();
+      }
     };
 
     init();
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
-      tids.forEach(clearTimeout);
+      disposed = true;
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
+      if (resizeTid) clearTimeout(resizeTid);
+      ambientCall?.kill();
+      swapCall?.kill();
+      master?.kill();
       gsapCtx?.revert?.();
-      if (ambientRef.current) clearInterval(ambientRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
