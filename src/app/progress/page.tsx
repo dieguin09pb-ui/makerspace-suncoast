@@ -93,21 +93,28 @@ export default function ProgressPage() {
                 shown here at their real dimensions. Drag any of them to rotate.
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {/* Flex rather than grid so the trailing row of 3 centres itself
+                instead of hanging off the left edge. */}
+            <div className="flex flex-wrap justify-center gap-3">
               {[
-                { url: "/models/stl/lift-carriage-3249k3.stl",     color: "#818cf8", label: "Bearing carriage", part: "3249K3",   dim: "80 x 25 x 87 mm" },
-                { url: "/models/stl/lift-guide-rail-9867k134.stl", color: "#6366f1", label: "Guide rail",       part: "9867K134", dim: "250 x 31 x 19 mm" },
-                { url: "/models/stl/lift-gear-3598n159.stl",       color: "#a78bfa", label: "High-power gear",  part: "3598N159", dim: "22 x 22 x 18 mm" },
-                { url: "/models/stl/lift-gear-3598n264.stl",       color: "#c4b5fd", label: "High-power gear",  part: "3598N264", dim: "98 x 15 x 8 mm" },
-                { url: "/models/stl/lift-gear-2664n11.stl",        color: "#34d399", label: "Spur gear, 20 deg", part: "2664N11",  dim: "31 x 18 x 17 mm" },
-                { url: "/models/stl/lift-gear-2664n475.stl",       color: "#5eead4", label: "Spur gear, 20 deg", part: "2664N475", dim: "25 x 25 x 14 mm" },
-                { url: "/models/stl/lift-knob-62195k34.stl",       color: "#fbbf24", label: "Ball knob",        part: "62195K34", dim: "17 x 17 x 17 mm" },
+                { url: "/models/stl/lift-carriage-3249k3.stl",     color: "#818cf8", name: "Bearing carriage",   dim: "80 x 25 x 87 mm" },
+                { url: "/models/stl/lift-guide-rail-9867k134.stl", color: "#6366f1", name: "Guide rail",         dim: "250 x 31 x 19 mm" },
+                { url: "/models/stl/lift-gear-3598n159.stl",       color: "#a78bfa", name: "High-power gear",    dim: "22 x 22 x 18 mm" },
+                { url: "/models/stl/lift-gear-3598n264.stl",       color: "#c4b5fd", name: "High-power gear",    dim: "98 x 15 x 8 mm" },
+                { url: "/models/stl/lift-gear-2664n11.stl",        color: "#34d399", name: "Spur gear, 20 deg",  dim: "31 x 18 x 17 mm" },
+                { url: "/models/stl/lift-gear-2664n475.stl",       color: "#5eead4", name: "Spur gear, 20 deg",  dim: "25 x 25 x 14 mm" },
+                { url: "/models/stl/lift-knob-62195k34.stl",       color: "#fbbf24", name: "Ball knob",          dim: "17 x 17 x 17 mm" },
               ].map((m, i) => (
-                <ScrollReveal key={m.url} direction="up" delay={Math.min(i * 60, 300)}>
+                <ScrollReveal
+                  key={m.url}
+                  direction="up"
+                  delay={Math.min(i * 60, 300)}
+                  className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.5rem)] lg:w-[calc(25%-0.5625rem)]"
+                >
                   <div className="flex flex-col gap-2">
-                    <StlViewer url={m.url} color={m.color} height={200} label={m.label} />
+                    <StlViewer url={m.url} color={m.color} height={200} label={m.name} />
                     <div className="text-center">
-                      <p className="text-xs text-gray-500 font-medium">{m.part}</p>
+                      <p className="text-xs text-gray-500 font-medium">{m.name}</p>
                       <p className="text-[11px] text-gray-400">{m.dim}</p>
                     </div>
                   </div>
