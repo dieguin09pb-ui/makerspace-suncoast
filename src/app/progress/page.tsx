@@ -4,7 +4,7 @@ import { StlViewer } from "@/components/progress/StlViewer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const metadata: Metadata = {
-  title: "Progress — Makerspace @ Suncoast",
+  title: "Progress | Makerspace @ Suncoast",
 };
 
 export default function ProgressPage() {
@@ -15,11 +15,11 @@ export default function ProgressPage() {
           <span className="text-xs font-semibold tracking-widest uppercase text-indigo-500">What We&apos;ve Built</span>
           <h1 className="text-4xl font-black text-gray-900 mt-1 mb-2">Member Progress</h1>
           <p className="text-gray-500 text-sm mb-10 max-w-xl">
-            Real work from our members — from digital file to finished product. Every project here started as an idea at a lunch meeting.
+            Real work from our members, from digital file to finished product. Every project here started as an idea at a lunch meeting.
           </p>
         </ScrollReveal>
 
-        {/* ── MPFI Project 1 — Microscope Stage Lift ── */}
+        {/* ---- MPFI Project 1: Microscope Stage Lift ---- */}
         <ScrollReveal direction="up">
           <section className="mb-14">
             <div className="mb-3">
@@ -27,7 +27,7 @@ export default function ProgressPage() {
               <h2 className="text-2xl font-black text-gray-900">Microscope Stage-Assisted Lift</h2>
               <p className="text-sm text-gray-500 mt-0.5">
                 A gas-spring assisted lift that raises the stage of a Zeiss LSM 980 confocal microscope for
-                objective access — designed in SolidWorks on T-slotted framing with a linear guide rail and
+                objective access. Designed in SolidWorks on T-slotted framing with a linear guide rail and
                 locking sleeve-bearing carriage.
               </p>
             </div>
@@ -54,7 +54,7 @@ export default function ProgressPage() {
                 {
                   rev: "Assembly 1",
                   when: "June",
-                  body: "First concept — gear-driven lift on a 250 mm guide rail, with custom gussets and under-rails around off-the-shelf hardware.",
+                  body: "First concept: a gear-driven lift on a 250 mm guide rail, with custom gussets and under-rails around off-the-shelf hardware.",
                 },
                 {
                   rev: "Assembly 2",
@@ -64,7 +64,7 @@ export default function ProgressPage() {
                 {
                   rev: "Assembly 3",
                   when: "Late July",
-                  body: "Final build — reworked gas spring, aluminum spacers and shoulder screws, knurled-grip knob, and the Zeiss 10x objective modeled in for clearance checks.",
+                  body: "Final build: reworked gas spring, aluminum spacers and shoulder screws, knurled-grip knob, and the Zeiss 10x objective modeled in for clearance checks.",
                 },
               ].map((v, i) => (
                 <ScrollReveal key={v.rev} direction="up" delay={i * 80}>
@@ -81,7 +81,43 @@ export default function ProgressPage() {
           </section>
         </ScrollReveal>
 
-        {/* ── MPFI Project 2 — Light Box Enclosure ── */}
+        {/* ---- MPFI Project 1: Assembly 1 hardware ---- */}
+        <ScrollReveal direction="up">
+          <section className="mb-14">
+            <div className="mb-3">
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-indigo-500">MPFI &middot; Project 1</span>
+              <h2 className="text-2xl font-black text-gray-900">Assembly 1 Hardware</h2>
+              <p className="text-sm text-gray-500 mt-0.5">
+                The off-the-shelf drive and motion components the first gear-driven concept was built around.
+                These are the McMaster-Carr catalog models that were mated into the Assembly 1 SolidWorks file,
+                shown here at their real dimensions. Drag any of them to rotate.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {[
+                { url: "/models/stl/lift-carriage-3249k3.stl",     color: "#818cf8", label: "Bearing carriage", part: "3249K3",   dim: "80 x 25 x 87 mm" },
+                { url: "/models/stl/lift-guide-rail-9867k134.stl", color: "#6366f1", label: "Guide rail",       part: "9867K134", dim: "250 x 31 x 19 mm" },
+                { url: "/models/stl/lift-gear-3598n159.stl",       color: "#a78bfa", label: "High-power gear",  part: "3598N159", dim: "22 x 22 x 18 mm" },
+                { url: "/models/stl/lift-gear-3598n264.stl",       color: "#c4b5fd", label: "High-power gear",  part: "3598N264", dim: "98 x 15 x 8 mm" },
+                { url: "/models/stl/lift-gear-2664n11.stl",        color: "#34d399", label: "Spur gear, 20 deg", part: "2664N11",  dim: "31 x 18 x 17 mm" },
+                { url: "/models/stl/lift-gear-2664n475.stl",       color: "#5eead4", label: "Spur gear, 20 deg", part: "2664N475", dim: "25 x 25 x 14 mm" },
+                { url: "/models/stl/lift-knob-62195k34.stl",       color: "#fbbf24", label: "Ball knob",        part: "62195K34", dim: "17 x 17 x 17 mm" },
+              ].map((m, i) => (
+                <ScrollReveal key={m.url} direction="up" delay={Math.min(i * 60, 300)}>
+                  <div className="flex flex-col gap-2">
+                    <StlViewer url={m.url} color={m.color} height={200} label={m.label} />
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 font-medium">{m.part}</p>
+                      <p className="text-[11px] text-gray-400">{m.dim}</p>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* ---- MPFI Project 2: Light Box Enclosure ---- */}
         <ScrollReveal direction="up">
           <section className="mb-14">
             <div className="mb-3">
@@ -89,7 +125,7 @@ export default function ProgressPage() {
               <h2 className="text-2xl font-black text-gray-900">Light Box Enclosure</h2>
               <p className="text-sm text-gray-500 mt-0.5">
                 A light-tight enclosure with magnetic doors and sliding panels. V1 was a full SolidWorks
-                assembly; V2 added the manufacturing files — DXFs for the laser-cut panels and STLs for the
+                assembly; V2 added the manufacturing files: DXFs for the laser-cut panels and STLs for the
                 printed rails and mounts below.
               </p>
             </div>
@@ -103,7 +139,7 @@ export default function ProgressPage() {
                 <ScrollReveal key={m.url} direction="up" delay={i * 80}>
                   <div className="flex flex-col gap-2">
                     <StlViewer url={m.url} color={m.color} height={220} label={m.label} />
-                    <p className="text-xs text-gray-400 text-center">{m.label} — V2 print file</p>
+                    <p className="text-xs text-gray-400 text-center">{m.label}, V2 print file</p>
                   </div>
                 </ScrollReveal>
               ))}
@@ -111,7 +147,7 @@ export default function ProgressPage() {
           </section>
         </ScrollReveal>
 
-        {/* ── Belt Holder ── */}
+        {/* ---- Belt Holder ---- */}
         <ScrollReveal direction="up">
           <section className="mb-14">
             <div className="mb-3">
@@ -133,32 +169,32 @@ export default function ProgressPage() {
           </section>
         </ScrollReveal>
 
-        {/* ── Drone Chassis Evolution ── */}
+        {/* ---- Drone Chassis Evolution ---- */}
         <ScrollReveal direction="up" delay={50}>
           <section className="mb-14">
             <div className="mb-3">
-              <h2 className="text-2xl font-black text-gray-900">Drone Chassis — Design Evolution</h2>
-              <p className="text-sm text-gray-500 mt-0.5">From V2 to V6.1 — iterating toward a lighter, stronger frame over multiple design cycles</p>
+              <h2 className="text-2xl font-black text-gray-900">Drone Chassis Design Evolution</h2>
+              <p className="text-sm text-gray-500 mt-0.5">From V2 to V6.1, iterating toward a lighter, stronger frame over multiple design cycles</p>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <StlViewer url="/models/stl/drone-chassis-v2.stl" color="#6366f1" height={320} label="V2 — initial design" />
-                <p className="text-xs text-gray-400 text-center">Version 2 — where it started</p>
+                <StlViewer url="/models/stl/drone-chassis-v2.stl" color="#6366f1" height={320} label="V2, initial design" />
+                <p className="text-xs text-gray-400 text-center">Version 2, where it started</p>
               </div>
               <div className="flex flex-col gap-2">
-                <StlViewer url="/models/stl/drone-chassis-v6.stl" color="#a78bfa" height={320} label="V6.1 — refined" />
-                <p className="text-xs text-gray-400 text-center">Version 6.1 — current build</p>
+                <StlViewer url="/models/stl/drone-chassis-v6.stl" color="#a78bfa" height={320} label="V6.1, refined" />
+                <p className="text-xs text-gray-400 text-center">Version 6.1, current build</p>
               </div>
             </div>
           </section>
         </ScrollReveal>
 
-        {/* ── Bionic Arm ── */}
+        {/* ---- Bionic Arm ---- */}
         <ScrollReveal direction="up">
           <section className="mb-14">
             <div className="mb-3">
               <h2 className="text-2xl font-black text-gray-900">Bionic Arm</h2>
-              <p className="text-sm text-gray-500 mt-0.5">A fully 3D-printed prosthetic arm — built and assembled by club members</p>
+              <p className="text-sm text-gray-500 mt-0.5">A fully 3D-printed prosthetic arm, built and assembled by club members</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {[
@@ -180,7 +216,7 @@ export default function ProgressPage() {
           </section>
         </ScrollReveal>
 
-        {/* ── RC Car ── */}
+        {/* ---- RC Car ---- */}
         <ScrollReveal direction="left">
           <section className="mb-14">
             <div className="mb-3">
@@ -193,12 +229,12 @@ export default function ProgressPage() {
           </section>
         </ScrollReveal>
 
-        {/* ── Greenhouse STL ── */}
+        {/* ---- Greenhouse STL ---- */}
         <ScrollReveal direction="up">
           <section className="mb-4">
             <div className="mb-3">
               <h2 className="text-2xl font-black text-gray-900">Greenhouse Model</h2>
-              <p className="text-sm text-gray-500 mt-0.5">3D modeled greenhouse — an ongoing design project</p>
+              <p className="text-sm text-gray-500 mt-0.5">3D modeled greenhouse, an ongoing design project</p>
             </div>
             <StlViewer url="/models/stl/greenhouse.stl" color="#34d399" height={340} label="Greenhouse STL" />
           </section>
