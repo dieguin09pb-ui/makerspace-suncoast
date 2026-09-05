@@ -10,7 +10,7 @@ interface Props {
 }
 
 /**
- * Renders one STL in its own WebGL context.
+ * Renders one STL or Draco-compressed GLB in its own WebGL context.
  *
  * The context is created only while the viewer is near the viewport and is
  * torn down again once it scrolls away. Browsers cap how many live WebGL
@@ -51,8 +51,8 @@ export function StlViewer({ url, color = "#818cf8", height = 240, label }: Props
     let cleanup: (() => void) | null = null;
 
     const setup = async () => {
+      const isGlb = /\.glb$/i.test(url);
       const THREE = await import("three");
-      const { STLLoader } = await import("three/examples/jsm/loaders/STLLoader.js");
       const { OrbitControls } = await import("three/examples/jsm/controls/OrbitControls.js");
       if (disposed || !mountRef.current) return;
 
@@ -85,17 +85,22 @@ export function StlViewer({ url, color = "#818cf8", height = 240, label }: Props
       // Default framing so the first frames are not looking at nothing.
       camera.position.set(0, 0.5, 2.2);
 
-      let mesh: import("three").Mesh | null = null;
-      let radius = 1;
+      let root: import("three").Object3D | null = null;
+      let draco: import("three/examples/jsm/loaders/DRACOLoader.js").DRACOLoader | null = null;
+      let size = new THREE.Vector3(1, 1, 1);
 
-      // Frame the part against whichever field of view is tighter, so a long
-      // thin part (a 250 mm rail) fills the canvas instead of rendering as a
-      // sliver the way a fixed maxDim multiplier does.
+      // Fit the part's actual extents to the canvas, not its bounding sphere.
+      // A sphere around a tall or long object is much bigger than the object,
+      // so sphere-fitting leaves it marooned in empty space. Width uses the
+      // x/z diagonal, which is the widest the part gets as it auto-rotates.
       const frame = () => {
         const vFov = (camera.fov * Math.PI) / 180;
         const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
-        const dist = (radius / Math.sin(Math.min(vFov, hFov) / 2)) * 1.06;
-        camera.position.set(0, radius * 0.32, dist);
+        const spin = Math.hypot(size.x, size.z);
+        const distV = size.y / 2 / Math.tan(vFov / 2);
+        const distH = spin / 2 / Math.tan(hFov / 2);
+        const dist = Math.max(distV, distH, 1e-4) * 1.12;
+        camera.position.set(0, dist * 0.22, dist);
         camera.near = dist / 100;
         camera.far = dist * 100;
         camera.updateProjectionMatrix();
@@ -103,38 +108,78 @@ export function StlViewer({ url, color = "#818cf8", height = 240, label }: Props
         controls.update();
       };
 
-      const loader = new STLLoader();
-      loader.load(
-        url,
-        (geometry) => {
-          if (disposed) {
-            geometry.dispose();
-            return;
-          }
-          geometry.computeBoundingBox();
-          const box = geometry.boundingBox!;
-          const center = new THREE.Vector3();
-          box.getCenter(center);
-          geometry.translate(-center.x, -center.y, -center.z);
+      const onError = () => {
+        if (!disposed) setFailed(true);
+      };
 
-          geometry.computeBoundingSphere();
-          radius = geometry.boundingSphere?.radius || 1;
-          frame();
+      // Fit whatever arrived (a bare STL geometry or a whole glTF scene) and
+      // hand it to the shared framing/disposal path.
+      const place = (obj: import("three").Object3D) => {
+        const box = new THREE.Box3().setFromObject(obj);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        obj.position.sub(center);
 
-          const material = new THREE.MeshPhongMaterial({
-            color,
-            specular: 0x333333,
-            shininess: 50,
-          });
-          mesh = new THREE.Mesh(geometry, material);
-          scene.add(mesh);
-          setLoaded(true);
-        },
-        undefined,
-        () => {
-          if (!disposed) setFailed(true);
-        }
-      );
+        box.getSize(size);
+        if (size.x <= 0 || size.y <= 0 || size.z <= 0) size.set(1, 1, 1);
+        frame();
+
+        root = obj;
+        scene.add(obj);
+        setLoaded(true);
+      };
+
+      if (isGlb) {
+        const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+        const { DRACOLoader } = await import("three/examples/jsm/loaders/DRACOLoader.js");
+        if (disposed) return;
+
+        // Draco-compressed geometry; the decoder is served from /public/draco.
+        draco = new DRACOLoader();
+        draco.setDecoderPath("/draco/");
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.setDRACOLoader(draco);
+
+        gltfLoader.load(
+          url,
+          (gltf) => {
+            if (disposed) return;
+            gltf.scene.traverse((o) => {
+              const m = o as import("three").Mesh;
+              if (m.isMesh) {
+                m.material = new THREE.MeshPhongMaterial({
+                  color,
+                  specular: 0x2a2a2a,
+                  shininess: 35,
+                });
+              }
+            });
+            place(gltf.scene);
+          },
+          undefined,
+          onError
+        );
+      } else {
+        const { STLLoader } = await import("three/examples/jsm/loaders/STLLoader.js");
+        if (disposed) return;
+        new STLLoader().load(
+          url,
+          (geometry) => {
+            if (disposed) {
+              geometry.dispose();
+              return;
+            }
+            const material = new THREE.MeshPhongMaterial({
+              color,
+              specular: 0x333333,
+              shininess: 50,
+            });
+            place(new THREE.Mesh(geometry, material));
+          },
+          undefined,
+          onError
+        );
+      }
 
       // Keep the canvas matched to its column when the layout reflows.
       const ro = new ResizeObserver(() => {
@@ -159,11 +204,17 @@ export function StlViewer({ url, color = "#818cf8", height = 240, label }: Props
         cancelAnimationFrame(animId);
         ro.disconnect();
         controls.dispose();
-        if (mesh) {
-          scene.remove(mesh);
-          mesh.geometry.dispose();
-          (mesh.material as import("three").Material).dispose();
+        if (root) {
+          scene.remove(root);
+          root.traverse((o) => {
+            const m = o as import("three").Mesh;
+            if (!m.isMesh) return;
+            m.geometry.dispose();
+            const mat = m.material as import("three").Material | import("three").Material[];
+            Array.isArray(mat) ? mat.forEach((x) => x.dispose()) : mat.dispose();
+          });
         }
+        draco?.dispose();
         renderer.dispose();
         // Hand the GPU context back immediately instead of waiting for GC,
         // so scrolling through the page never exhausts the context budget.

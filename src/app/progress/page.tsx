@@ -81,6 +81,32 @@ export default function ProgressPage() {
           </section>
         </ScrollReveal>
 
+        {/* ---- MPFI Project 1: the finished assembly ---- */}
+        <ScrollReveal direction="up">
+          <section className="mb-14">
+            <div className="mb-3">
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-indigo-500">MPFI &middot; Project 1</span>
+              <h2 className="text-2xl font-black text-gray-900">The Finished Assembly, In Context</h2>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Every part mated into a single model. The lift is the actual deliverable, but it was modelled
+                sitting inside a stand-in of the microscope it serves, so the design could be checked and shown
+                in place rather than floating in isolation. The body around it is reference geometry: it exists
+                purely to make the mounting obvious, showing exactly where the assembly clamps to the real
+                instrument and how much clearance is left underneath.
+              </p>
+            </div>
+            <StlViewer
+              url="/models/lift-assembly.glb"
+              color="#c8ccd8"
+              height={440}
+              label="LSM980 stage-assisted lift, full assembly"
+            />
+            <p className="text-xs text-gray-400 text-center mt-2">
+              Exported from SolidWorks as one combined body. 535,824 triangles, 300 x 505 x 361 mm. Drag to rotate, scroll to zoom.
+            </p>
+          </section>
+        </ScrollReveal>
+
         {/* ---- MPFI Project 1: Assembly 1 hardware ---- */}
         <ScrollReveal direction="up">
           <section className="mb-14">
