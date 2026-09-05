@@ -89,18 +89,37 @@ export function StlViewer({ url, color = "#818cf8", height = 240, label }: Props
       let draco: import("three/examples/jsm/loaders/DRACOLoader.js").DRACOLoader | null = null;
       let size = new THREE.Vector3(1, 1, 1);
 
-      // Fit the part's actual extents to the canvas, not its bounding sphere.
-      // A sphere around a tall or long object is much bigger than the object,
-      // so sphere-fitting leaves it marooned in empty space. Width uses the
-      // x/z diagonal, which is the widest the part gets as it auto-rotates.
+      // Fit the part's real corners to the canvas rather than its bounding
+      // sphere, which for a tall or deep object is far larger than the object
+      // and leaves it marooned in empty space.
+      //
+      // A corner at (x, y, z) is in frame from distance D when
+      // |x| / (D - z) <= tan(hFov/2) and |y| / (D - z) <= tan(vFov/2), so each
+      // corner demands D >= |x|/tanH + z. Taking the maximum over all eight
+      // corners across a turn of the auto-rotation gives the exact distance:
+      // it accounts for depth (the near face sits closer than the centre, which
+      // is what made the 505 mm deep assembly overflow) without over-padding
+      // compact parts the way a blanket depth allowance does.
       const frame = () => {
-        const vFov = (camera.fov * Math.PI) / 180;
-        const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
-        const spin = Math.hypot(size.x, size.z);
-        const distV = size.y / 2 / Math.tan(vFov / 2);
-        const distH = spin / 2 / Math.tan(hFov / 2);
-        const dist = Math.max(distV, distH, 1e-4) * 1.12;
-        camera.position.set(0, dist * 0.22, dist);
+        const tanV = Math.tan((camera.fov * Math.PI) / 360);
+        const tanH = tanV * camera.aspect;
+        const a = size.x / 2, b = size.y / 2, c = size.z / 2;
+
+        let need = 0;
+        for (let i = 0; i < 16; i++) {
+          const t = (i / 16) * Math.PI * 2;
+          const ct = Math.cos(t), st = Math.sin(t);
+          for (const sx of [-a, a]) {
+            for (const sz of [-c, c]) {
+              const x = sx * ct + sz * st;
+              const z = -sx * st + sz * ct;
+              need = Math.max(need, Math.abs(x) / tanH + z, b / tanV + z);
+            }
+          }
+        }
+
+        const dist = Math.max(need, 1e-4) * 1.05;
+        camera.position.set(0, dist * 0.18, dist);
         camera.near = dist / 100;
         camera.far = dist * 100;
         camera.updateProjectionMatrix();
