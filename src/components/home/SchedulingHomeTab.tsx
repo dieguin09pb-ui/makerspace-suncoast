@@ -15,8 +15,9 @@ const ROLES_PREVIEW = [
 ];
 
 const SCHEDULE = [
-  { slot: "Lunch",        days: "Monday – Friday", note: "Every day" },
-  { slot: "After School", days: "Monday & Friday", note: "Two days a week" },
+  { slot: "Club Meeting",       days: "Monday, after school", note: "The main one" },
+  { slot: "Workshop Wednesday", days: "Wednesday, at lunch",  note: "We teach a skill" },
+  { slot: "Open Build Time",    days: "Any day, at lunch",    note: "Your projects" },
 ];
 
 export function HomeTabSection() {
@@ -52,7 +53,7 @@ export function HomeTabSection() {
                   ))}
                 </div>
                 <p className="text-xs text-gray-400 mt-4">
-                  All meetings are in Room 3-126. Drop in at lunch any day, or stay after school on Mondays and Fridays.
+                  Everything happens in Room 3-126. Come to the Monday meeting, learn something new at Workshop Wednesday, or just drop in at lunch any day to work on your own build.
                 </p>
               </div>
             </ScrollReveal>

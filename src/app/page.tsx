@@ -179,7 +179,7 @@ export default function HomePage() {
           />
           <h2 className="text-2xl font-black mb-2">Ready to Build Something?</h2>
           <p className="mb-6 opacity-90 text-sm">
-            A student-run makerspace at Suncoast Community High School — lunch every day and after school Mondays and Fridays in Room 3-126.
+            A student-run makerspace at Suncoast Community High School. We meet Mondays after school, teach a new skill at Workshop Wednesday, and leave Room 3-126 open every lunch.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/progress">

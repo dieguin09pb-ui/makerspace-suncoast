@@ -26,6 +26,7 @@ const IMAGES = [
   { src: "/images/real/belt-printed.jpg",          label: "3D Printed Part", rotate: "1.5deg"  },
   { src: "/images/real/bionic-arm-top.jpg",        label: "Arm Detail",      rotate: "-2deg"   },
   { src: "/images/real/bionic-arm-bottom.jpg",     label: "Arm Base",        rotate: "2.5deg"  },
+  { src: "/images/real/drone-build.jpg",           label: "FPV Drone Build", rotate: "-2deg"   },
 ];
 
 type TextVariant = "headline" | "subhead" | "byStudents" | "stat" | "location" | "tags" | "meeting" | "tagline";
@@ -53,22 +54,22 @@ interface Cycle {
 // default:   a = left, b = right (standard side-by-side)
 const CYCLES: Cycle[] = [
   // ── original 14 ──
-  { a: { kind: "image", contentIdx: 0 }, b: { kind: "text",  contentIdx: 0 } },
+  { a: { kind: "image", contentIdx: 6 }, b: { kind: "text",  contentIdx: 0 } },
   { a: { kind: "text",  contentIdx: 2 }, b: { kind: "image", contentIdx: 1 } },
   { a: { kind: "text",  contentIdx: 0 }, b: { kind: "text",  contentIdx: 6 }, c: { kind: "image", contentIdx: 2 }, layout: "stacked" },
   { a: { kind: "image", contentIdx: 2 }, b: { kind: "text",  contentIdx: 3 } },
   { a: { kind: "text",  contentIdx: 1 }, b: { kind: "image", contentIdx: 3 } },
-  { a: { kind: "text",  contentIdx: 4 }, b: { kind: "text",  contentIdx: 7 }, c: { kind: "image", contentIdx: 5 }, layout: "stacked" },
+  { a: { kind: "text",  contentIdx: 4 }, b: { kind: "text",  contentIdx: 7 }, c: { kind: "image", contentIdx: 6 }, layout: "stacked" },
   { a: { kind: "image", contentIdx: 4 }, b: { kind: "text",  contentIdx: 4 } },
   { a: { kind: "text",  contentIdx: 5 }, b: { kind: "image", contentIdx: 5 } },
   { a: { kind: "text",  contentIdx: 7 }, b: { kind: "text",  contentIdx: 2 }, c: { kind: "image", contentIdx: 4 }, layout: "stacked" },
   { a: { kind: "image", contentIdx: 1 }, b: { kind: "text",  contentIdx: 6 } },
-  { a: { kind: "text",  contentIdx: 0 }, b: { kind: "image", contentIdx: 4 } },
+  { a: { kind: "text",  contentIdx: 0 }, b: { kind: "image", contentIdx: 6 } },
   { a: { kind: "image", contentIdx: 3 }, b: { kind: "text",  contentIdx: 1 } },
   { a: { kind: "text",  contentIdx: 3 }, b: { kind: "image", contentIdx: 0 } },
   { a: { kind: "image", contentIdx: 5 }, b: { kind: "text",  contentIdx: 5 } },
   // ── 10 new ──
-  { a: { kind: "image", contentIdx: 3 }, b: { kind: "text",  contentIdx: 5 } },
+  { a: { kind: "image", contentIdx: 6 }, b: { kind: "text",  contentIdx: 5 } },
   { a: { kind: "text",  contentIdx: 6 }, b: { kind: "image", contentIdx: 2 } },
   { a: { kind: "text",  contentIdx: 1 }, b: { kind: "text",  contentIdx: 4 }, c: { kind: "image", contentIdx: 0 }, layout: "stacked" },
   { a: { kind: "image", contentIdx: 0 }, b: { kind: "text",  contentIdx: 2 } },
@@ -275,7 +276,7 @@ function TextSlot({ slot }: { slot: Slot }) {
           </p>
           <p className={`font-black text-white ${xl ? "text-7xl" : "text-xl"}`}>Room 3-126</p>
           <p className={`text-white/60 mt-3 ${xl ? "text-lg" : "text-xs"}`}>
-            Lunch daily · After school Mon & Fri
+            Lunch daily · Meeting Monday after school
           </p>
         </div>
       );
@@ -304,7 +305,7 @@ function TextSlot({ slot }: { slot: Slot }) {
             EVERY DAY
           </p>
           <p className={`text-indigo-300/80 mt-3 font-medium ${xl ? "text-xl" : "text-xs"}`}>
-            Lunch, plus after school Mon &amp; Fri · Room 3-126
+            Monday after school, workshops Wednesday lunch · Room 3-126
           </p>
           <div className={`mt-4 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full ${xl ? "h-0.5 w-20" : "h-px w-8"}`} />
         </div>

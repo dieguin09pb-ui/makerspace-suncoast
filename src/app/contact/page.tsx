@@ -110,7 +110,7 @@ export default function ContactPage() {
           <p className="text-sm text-gray-500">
             Suncoast Community High School<br />
             1717 Avenue S, Riviera Beach, FL 33404<br />
-            <span className="text-indigo-600 font-medium">Meetings: Lunch every day · After school Mondays & Fridays · Room 3-126</span>
+            <span className="text-indigo-600 font-medium">Meeting: Mondays after school · Workshop Wednesdays at lunch · Open build time any lunch · Room 3-126</span>
           </p>
         </div>
         </ScrollReveal>

@@ -151,25 +151,45 @@ export default function ProgressPage() {
         <ScrollReveal direction="up">
           <section className="mb-14">
             <div className="mb-3">
-              <span className="text-[10px] font-semibold tracking-widest uppercase text-indigo-500">MPFI · Project 2</span>
+              <span className="text-[10px] font-semibold tracking-widest uppercase text-indigo-500">MPFI &middot; Project 2</span>
               <h2 className="text-2xl font-black text-gray-900">Light Box Enclosure</h2>
               <p className="text-sm text-gray-500 mt-0.5">
                 A light-tight enclosure with magnetic doors and sliding panels. V1 was a full SolidWorks
-                assembly; V2 added the manufacturing files: DXFs for the laser-cut panels and STLs for the
-                printed rails and mounts below.
+                assembly; V2 added the manufacturing files, DXFs for the laser-cut panels and STLs for the
+                printed parts. Below is the finished enclosure, then the parts it is built from.
               </p>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+
+            <StlViewer
+              url="/models/stl/lightbox-assembly.stl"
+              color="#8b93c4"
+              height={440}
+              label="Light box enclosure, full assembly"
+            />
+            <p className="text-xs text-gray-400 text-center mt-2 mb-5">
+              25,172 triangles, 303 x 329 x 291 mm. Drag to rotate, scroll to zoom.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-3">
               {[
-                { url: "/models/stl/lightbox-rail.stl",           color: "#6366f1", label: "Rail" },
-                { url: "/models/stl/lightbox-bottom-rail.stl",    color: "#818cf8", label: "Bottom rail" },
-                { url: "/models/stl/lightbox-panel-mount.stl",    color: "#a78bfa", label: "Panel mount" },
-                { url: "/models/stl/lightbox-wall-mag-mount.stl", color: "#34d399", label: "Wall magnet mount" },
+                { url: "/models/stl/lightbox-magnetic-panel.stl",  color: "#6366f1", name: "Magnetic insert panel", dim: "294 x 325 x 4.5 mm" },
+                { url: "/models/stl/lightbox-right-door.stl",      color: "#818cf8", name: "Right side door",       dim: "320 x 286 x 4.5 mm" },
+                { url: "/models/stl/lightbox-left-door.stl",       color: "#a78bfa", name: "Left side door",        dim: "320 x 286 x 4.5 mm" },
+                { url: "/models/stl/lightbox-sliding-part.stl",    color: "#34d399", name: "Sliding part",          dim: "172 x 167 x 4.5 mm" },
+                { url: "/models/stl/lightbox-wall-mag-mount.stl",  color: "#fbbf24", name: "Wall magnet mount",     dim: "24 x 14 x 6 mm" },
               ].map((m, i) => (
-                <ScrollReveal key={m.url} direction="up" delay={i * 80}>
+                <ScrollReveal
+                  key={m.url}
+                  direction="up"
+                  delay={Math.min(i * 60, 300)}
+                  className="w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.5rem)] lg:w-[calc(25%-0.5625rem)]"
+                >
                   <div className="flex flex-col gap-2">
-                    <StlViewer url={m.url} color={m.color} height={220} label={m.label} />
-                    <p className="text-xs text-gray-400 text-center">{m.label}, V2 print file</p>
+                    <StlViewer url={m.url} color={m.color} height={200} label={m.name} />
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 font-medium">{m.name}</p>
+                      <p className="text-[11px] text-gray-400">{m.dim}</p>
+                    </div>
                   </div>
                 </ScrollReveal>
               ))}
@@ -204,9 +224,9 @@ export default function ProgressPage() {
           <section className="mb-14">
             <div className="mb-3">
               <h2 className="text-2xl font-black text-gray-900">Drone Chassis Design Evolution</h2>
-              <p className="text-sm text-gray-500 mt-0.5">From V2 to V6.1, iterating toward a lighter, stronger frame over multiple design cycles</p>
+              <p className="text-sm text-gray-500 mt-0.5">From V2 to V6.1, iterating toward a lighter, stronger frame, and the flying build it became</p>
             </div>
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-3 gap-4">
               <div className="flex flex-col gap-2">
                 <StlViewer url="/models/stl/drone-chassis-v2.stl" color="#6366f1" height={320} label="V2, initial design" />
                 <p className="text-xs text-gray-400 text-center">Version 2, where it started</p>
@@ -214,6 +234,12 @@ export default function ProgressPage() {
               <div className="flex flex-col gap-2">
                 <StlViewer url="/models/stl/drone-chassis-v6.stl" color="#a78bfa" height={320} label="V6.1, refined" />
                 <p className="text-xs text-gray-400 text-center">Version 6.1, current build</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="relative rounded-xl overflow-hidden border border-gray-100 bg-gray-50" style={{ height: 320 }}>
+                  <Image src="/images/real/drone-build.jpg" alt="Assembled FPV drone with controller, battery and camera" fill className="object-contain" />
+                </div>
+                <p className="text-xs text-gray-400 text-center">Built and wired up, flight controller, LiPo and Pi camera</p>
               </div>
             </div>
           </section>
